@@ -15,3 +15,16 @@
     wait_condition:
       type: Ready
       status: 'True'
+- name: "Deploy cert-manager feature on OpenShift"
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('kubernetes.core.kustomize', dir='features/cert-manager/') }}"
+- name: Wait for cert-manager ClusterIssuer self-signed Ready condition
+  kubernetes.core.k8s_info:
+    kind: ClusterIssuer
+    name: self-signed
+    wait: true
+    wait_timeout: 300
+    wait_condition:
+      type: Ready
+      status: 'True'
