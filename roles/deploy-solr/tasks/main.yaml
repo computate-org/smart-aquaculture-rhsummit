@@ -1,0 +1,46 @@
+---
+- name: "Deploy solr cluster-scope bundle on OpenShift"
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('kubernetes.core.kustomize', dir='bundles/solr/') }}"
+- name: "Install solr secret on OpenShift"
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'solr-secret.yaml') }}"
+    validate_certs: false
+  when: (query('kubernetes.core.k8s', kind='Secret', resource_name=('solr-secret'), namespace='solr')[0].data['solr-password'] | default('')) == ''
+- name: "Deploy solr on OpenShift"
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('kubernetes.core.kustomize', dir='features/solr/') }}"
+- name: Wait for solr Ready condition
+  kubernetes.core.k8s_info:
+    namespace: solr
+    kind: Pod
+    label_selectors:
+      - app.kubernetes.io/name=solr
+      - apps.kubernetes.io/pod-index=0
+    wait: true
+    wait_timeout: 300
+    wait_condition:
+      type: Ready
+      status: 'True'
+- name: "Copy solr computate configset"
+  kubernetes.core.k8s_cp:
+    state: to_pod
+    namespace: "solr"
+    pod: "solr-0"
+    remote_path: /bitnami/solr/backup/
+    local_path: /home/ctate/.local/src/courses/computate-smart-cloud-deployer/solr/
+    validate_certs: false
+- name: "Create solr computate configset"
+  kubernetes.core.k8s_exec:
+    namespace: solr
+    pod: solr-0
+    command: >-
+      bash -c '
+      curl -k -s -X POST -u "admin:$SOLR_ADMIN_PASSWORD"
+      -H "Content-Type:application/octet-stream"
+      --data-binary @/bitnami/solr/backup/computate-configset.zip
+      "http://localhost:8983/solr/admin/configs?action=UPLOAD&name=computate&overwrite=true"
+      '

@@ -1,0 +1,39 @@
+---
+- name: "Install Red Hat OpenShift AI bundle on OpenShift"
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('kubernetes.core.kustomize', dir='bundles/rhods-operator/') }}"
+    validate_certs: false
+- name: Wait for OpenShift AI Operator Ready condition
+  kubernetes.core.k8s_info:
+    namespace: redhat-ods-operator
+    kind: Pod
+    label_selectors:
+      - name=rhods-operator
+    wait: true
+    wait_timeout: 300
+    wait_condition:
+      type: Ready
+      status: 'True'
+  retries: 10
+  delay: 30
+- name: "Install Red Hat OpenShift AI feature on OpenShift"
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('kubernetes.core.kustomize', dir='features/rhoai/') }}"
+    validate_certs: false
+  retries: 10
+  delay: 30
+- name: Wait for OpenShift AI Ready condition
+  kubernetes.core.k8s_info:
+    namespace: redhat-ods-applications
+    kind: Pod
+    label_selectors:
+      - deployment=rhods-dashboard
+    wait: true
+    wait_timeout: 300
+    wait_condition:
+      type: Ready
+      status: 'True'
+  retries: 10
+  delay: 30

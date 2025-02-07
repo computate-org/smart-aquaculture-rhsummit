@@ -1,0 +1,24 @@
+---
+- name: "Install database secret on OpenShift"
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'postgres-pguser-scorpiobroker-secret.yaml') }}"
+- name: "Deploy scorpiobroker bundle on OpenShift"
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('kubernetes.core.kustomize', dir='bundles/scorpiobroker/') }}"
+- name: "Deploy scorpiobroker feature on OpenShift"
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('kubernetes.core.kustomize', dir='features/scorpiobroker/') }}"
+- name: Wait for scorpiobroker Ready condition
+  kubernetes.core.k8s_info:
+    namespace: scorpiobroker
+    kind: Pod
+    label_selectors:
+      - app.kubernetes.io/name=scorpiobroker
+    wait: true
+    wait_timeout: 300
+    wait_condition:
+      type: Ready
+      status: 'True'

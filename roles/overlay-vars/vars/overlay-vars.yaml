@@ -1,0 +1,27 @@
+---
+GITHUB_ORG: computate-org
+CLUSTER_ADMIN_GROUP: smart-aquaculture
+AUTH_URL: https://sso.computate.org
+AUTH_REALM: SMARTAQUACULTURE
+AUTH_CLIENT: smartaquaculture
+SITE_NAMESPACE: smartaquaculture
+OPENSHIFT_APPS_DOMAIN: apps-crc.testing
+WORKBENCH_SIZE: 20Gi
+SITE_SHORT_NAME: smartaquaculture
+SITE_NAME: smart-aquaculture
+SITE_DESCRIPTION: Smart Aquaculture
+SITE_MAIN_VERTICLE_PACKAGE: org.computate.smartaquaculture.verticle
+SITE_POM_ARTIFACT_ID: smartaquaculture
+SITE_PORT: 10230
+SITE_SRC: "/opt/app-root/src/{{ SITE_NAME }}"
+COMPUTATE_SRC: "/opt/app-root/src/computate"
+COMPUTATE_VERTX_SRC: "/opt/app-root/src/computate-vertx"
+SOLR_NAMESPACE: solr
+DATABASE_NAMESPACE: postgres
+ENABLE_FIWARE: true
+AUTH_NAMESPACE: keycloak
+ADMIN_NAMESPACE: workbench-computate
+WORKBENCH_NAMES:
+  - USER_NAME: computate
+    WORKBENCH_ADMIN: true
+  - USER_NAME: user1

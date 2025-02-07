@@ -1,0 +1,6 @@
+- name: "deploy scorpiobroker"
+  connection: local
+  hosts: localhost
+  gather_facts: false
+  roles:
+    - deploy-scorpiobroker

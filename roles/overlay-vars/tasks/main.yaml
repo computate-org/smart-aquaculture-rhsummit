@@ -1,0 +1,10 @@
+- name: "Load vars"
+  tags:
+    - deploy-notebooks
+    - deploy-rolebindings
+    - deploy-configmaps
+    - deploy-vars
+    - create-database
+    - index-classes
+  ansible.builtin.include_vars:
+    file: "overlay-vars.yaml"

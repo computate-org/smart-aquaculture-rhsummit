@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scorpiobroker
+  namespace: scorpiobroker
+  labels:
+    app.kubernetes.io/instance: demo-scorpiobroker
+    app.kubernetes.io/name: scorpiobroker
+spec:
+  replicas: 1
+  revisionHistoryLimit: 0
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: scorpiobroker
+      app.kubernetes.io/name: scorpiobroker
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: scorpiobroker
+        app.kubernetes.io/name: scorpiobroker
+        app.kubernetes.io/version: 1.0.1
+    spec:
+      containers:
+        - name: scorpiobroker
+          env:
+            - name: QUARKUS_VERTX_MAX_EVENT_LOOP_EXECUTE_TIME
+              value: '60000'
+            - name: QUARKUS_VERTX_MAX_WORKER_EXECUTE_TIME
+              value: '60000'
+            - name: QUARKUS_VERTX_WARNING_EXCEPTION_TIME
+              value: '30000'
+            - name: QUARKUS_LOG_LEVEL
+              value: 'debug'
+
+            - name: DBHOST
+              value: "postgres-primary.postgres.svc"
+            - name: DBPORT
+              value: "5432"
+            - name: DBNAME
+              value: "scorpiobroker"
+            - name: DBUSER
+              value: "scorpiobroker"
+            - name: DBPASS
+              valueFrom:
+                secretKeyRef:
+                  name: "postgres-pguser-scorpiobroker"
+                  key: "password"
+
+          image: 'docker.io/scorpiobroker/all-in-one-runner:java-latest'
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            successThreshold: 1
+            tcpSocket:
+              port: 'http'
+            timeoutSeconds: 10
+            failureThreshold: 10
+          ports:
+            - containerPort: 9090
+              name: http
+              protocol: TCP
+          readinessProbe:
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            successThreshold: 1
+            tcpSocket:
+              port: 'http'
+            timeoutSeconds: 10
+            failureThreshold: 10
+          resources:
+            limits:
+              cpu: '500m'
+              memory: '3Gi'
+            requests:
+              cpu: '250m'
+              memory: '3Gi'
