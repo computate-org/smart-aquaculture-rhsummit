@@ -5,7 +5,7 @@ metadata:
   labels:
     app: keycloak
 spec:
-  instances: 2
+  instances: 1
   db:
     vendor: postgres
     host: postgres-primary.postgres.svc

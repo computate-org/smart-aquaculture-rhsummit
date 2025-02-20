@@ -1,0 +1,19 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: workbench-{{ WORKBENCH_NAME }}-{{ SITE_NAME }}
+  namespace: {{ WORKBENCH_NAMESPACE }}
+data:
+  SITE_SRC: "{{ SITE_SRC }}"
+  SOLR_COLLECTION_{{ SITE_SHORT_NAME }}: '{{ SITE_SHORT_NAME }}-{{ USER_NAME }}'
+  DATABASE_USERNAME_{{ SITE_SHORT_NAME }}: "{{ SITE_SHORT_NAME }}{{ USER_NAME | replace('-', '') | replace('_', '') }}"
+  DATABASE_DATABASE_{{ SITE_SHORT_NAME }}: "{{ SITE_SHORT_NAME }}{{ USER_NAME | replace('-', '') | replace('_', '') }}"
+  AUTH_NAMESPACE_{{ SITE_SHORT_NAME }}: keycloak
+  AUTH_HOST_NAME_{{ SITE_SHORT_NAME }}: "sso.computate.org"
+  AUTH_REALM_{{ SITE_SHORT_NAME }}: "{{ SITE_SHORT_NAME | upper }}"
+  AUTH_CLIENT_{{ SITE_SHORT_NAME }}: "{{ SITE_SHORT_NAME }}"
+  AUTH_OPENSHIFT_SECRET_{{ SITE_SHORT_NAME }}: "{{ 'keycloak-client-' + AUTH_CLIENT }}"
+  AUTH_ADMIN_OPENSHIFT_SECRET_{{ SITE_SHORT_NAME }}: "keycloak-initial-admin-{{ SITE_NAME }}"
+  AUTH_ADMIN_USERNAME_{{ SITE_SHORT_NAME }}: "{{ 'admin' }}"
+  AUTH_SCOPE_ADMIN_{{ SITE_SHORT_NAME }}: "{{ 'Admin' }}"
+  AUTH_SCOPE_SUPER_ADMIN_{{ SITE_SHORT_NAME }}: "{{ 'SuperAdmin' }}"

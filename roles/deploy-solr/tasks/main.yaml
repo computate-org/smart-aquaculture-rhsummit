@@ -6,9 +6,9 @@
 - name: "Install solr secret on OpenShift"
   kubernetes.core.k8s:
     state: present
-    definition: "{{ lookup('template', 'solr-secret.yaml') }}"
+    definition: "{{ lookup('template', 'solr.yaml') }}"
     validate_certs: false
-  when: (query('kubernetes.core.k8s', kind='Secret', resource_name=('solr-secret'), namespace='solr')[0].data['solr-password'] | default('')) == ''
+  when: (query('kubernetes.core.k8s', kind='Secret', resource_name=('solr'), namespace='solr')[0].data['solr-password'] | default('')) == ''
 - name: "Deploy solr on OpenShift"
   kubernetes.core.k8s:
     state: present

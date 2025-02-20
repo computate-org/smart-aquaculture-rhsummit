@@ -1,0 +1,27 @@
+---
+- name: "Configure OpenShift client {{ AUTH_CLIENT }}"
+  community.general.keycloak_client:
+    state: present
+    validate_certs: false
+    auth_client_id: admin-cli
+    auth_keycloak_url: "{{ AUTH_URL }}"
+    auth_realm: master
+    auth_username: admin
+    auth_password: "{{ query('kubernetes.core.k8s', kind='Secret', resource_name=('keycloak-initial-admin'), namespace='keycloak')[0].data['password'] | b64decode }}"
+    realm: "{{ AUTH_REALM }}"
+    id: "{{ AUTH_CLIENT }}"
+    name: "{{ AUTH_CLIENT }}"
+    clientId: "{{ AUTH_CLIENT }}"
+    standardFlowEnabled: true
+    serviceAccountsEnabled: true
+    authorizationServicesEnabled: true
+    frontchannelLogout: true
+    publicClient: false
+    protocol: openid-connect
+    redirectUris: "{{ lookup('template', 'keycloak-redirect-uris.yaml') | from_yaml }}"
+    defaultClientScopes:
+      - openid
+      - profile
+      - "{{ AUTH_CLIENT }}"
+    authorizationSettings:
+      decisionStrategy: AFFIRMATIVE
