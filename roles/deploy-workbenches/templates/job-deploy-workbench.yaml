@@ -1,0 +1,53 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: deploy-workbench
+  namespace: {{ WORKBENCH_NAMESPACE }}
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      serviceAccountName: deploy-workbench
+      volumes:
+        - name: deploy-workbench-defaults
+          configMap:
+            name: deploy-workbench-defaults
+        - name: deploy-workbench-playbook
+          configMap:
+            name: deploy-workbench-playbook
+        - name: deploy-workbench-tasks
+          configMap:
+            name: deploy-workbench-tasks
+        - name: deploy-workbench-templates
+          configMap:
+            name: deploy-workbench-templates
+        - name: home
+          emptyDir: {}
+        - name: ansible-tmp
+          emptyDir: {}
+      containers:
+        - name: deploy-workbench
+          image: quay.io/nerc-images/keycloak-ansible:latest
+          volumeMounts:
+            - name: deploy-workbench-playbook
+              mountPath: /home/ansible/.ansible/
+            - name: deploy-workbench-defaults
+              mountPath: /home/ansible/.ansible/roles/deploy-workbench/defaults/
+            - name: deploy-workbench-templates
+              mountPath: /home/ansible/.ansible/roles/deploy-workbench/templates/
+            - name: deploy-workbench-tasks
+              mountPath: /home/ansible/.ansible/roles/deploy-workbench/tasks/
+            - name: home
+              mountPath: /home/ansible
+            - name: ansible-tmp
+              mountPath: /home/ansible/.ansible/tmp/
+          env:
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          command: ["/bin/bash", "-c", "--"]
+          args:
+            - |
+                ansible-playbook /home/ansible/.ansible/deploy-workbench.yaml

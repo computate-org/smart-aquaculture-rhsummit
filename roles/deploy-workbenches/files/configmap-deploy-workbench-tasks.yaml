@@ -1,0 +1,254 @@
+apiVersion: v1
+kind: ConfigMap
+data:
+  main.yaml: |
+    - debug:
+        var: WORKBENCH_ADMIN
+    - name: "Create a Persistent Volume Claim for {{ WORKBENCH_NAME }}"
+      kubernetes.core.k8s:
+        state: present
+        definition: "{{ lookup('template', 'persistentvolumeclaim.yaml') }}"
+        validate_certs: false
+    - name: "Create a default ConfigMap for Notebook for {{ WORKBENCH_NAME }}"
+      tags:
+        - deploy-configmaps
+      kubernetes.core.k8s:
+        state: present
+        definition: "{{ lookup('template', 'defaultConfigmap.yaml') }}"
+        validate_certs: false
+    - name: "Create a ConfigMap for Notebook for {{ WORKBENCH_NAME }}"
+      tags:
+        - deploy-configmaps
+      kubernetes.core.k8s:
+        state: present
+        definition: "{{ lookup('template', 'configmap.yaml') }}"
+        validate_certs: false
+    - name: "Create a Notebook for {{ WORKBENCH_NAME }}"
+      kubernetes.core.k8s:
+        state: present
+        definition: "{{ lookup('template', 'notebook.yaml') }}"
+        validate_certs: false
+    - name: Wait for workbench Ready condition
+      kubernetes.core.k8s_info:
+        namespace: "{{ WORKBENCH_NAMESPACE }}"
+        kind: Pod
+        label_selectors:
+          - "notebook-name={{ WORKBENCH_NAME }}"
+        wait: true
+        wait_timeout: 300
+        wait_condition:
+          type: Ready
+          status: 'True'
+    - name: "Configure vscode extensions for workbench {{ WORKBENCH_NAME }}"
+      kubernetes.core.k8s_cp:
+        state: to_pod
+        namespace: "{{ WORKBENCH_NAMESPACE }}"
+        pod: "{{ WORKBENCH_NAME }}-0"
+        container: "{{ WORKBENCH_NAME }}"
+        remote_path: /opt/app-root/src/.vscode/extensions.json
+        content: |-
+          {
+            "recommendations": [
+              "ms-toolsai.jupyter"
+              , "redhat.java"
+              , "vscjava.vscode-java-debug"
+              , "vscjava.vscode-maven"
+            ]
+          }
+        validate_certs: false
+    - name: "Configure vscode settings.json for workbench {{ WORKBENCH_NAME }}"
+      kubernetes.core.k8s_cp:
+        state: to_pod
+        namespace: "{{ WORKBENCH_NAMESPACE }}"
+        pod: "{{ WORKBENCH_NAME }}-0"
+        container: "{{ WORKBENCH_NAME }}"
+        remote_path: /opt/app-root/src/.vscode/settings.json
+        content: |
+          {{ lookup('template', 'vscodeSettings.json', convert_data=false) | from_json | to_nice_json }}
+        validate_certs: false
+    - name: "Configure user settings.json for workbench {{ WORKBENCH_NAME }}"
+      kubernetes.core.k8s_cp:
+        state: to_pod
+        namespace: "{{ WORKBENCH_NAMESPACE }}"
+        pod: "{{ WORKBENCH_NAME }}-0"
+        container: "{{ WORKBENCH_NAME }}"
+        remote_path: /opt/app-root/src/.local/share/code-server/User/settings.json
+        content: |
+          {{ lookup('template', 'userSettings.json', convert_data=false) | from_json | to_nice_json }}
+        validate_certs: false
+    - name: "Configure keybindings.json for workbench {{ WORKBENCH_NAME }}"
+      kubernetes.core.k8s_cp:
+        state: to_pod
+        namespace: "{{ WORKBENCH_NAMESPACE }}"
+        pod: "{{ WORKBENCH_NAME }}-0"
+        container: "{{ WORKBENCH_NAME }}"
+        remote_path: /opt/app-root/src/.local/share/code-server/User/keybindings.json
+        content: |
+          {{ lookup('template', 'keybindings.json', convert_data=false) }}
+        validate_certs: false
+    - name: "Configure vars for workbench {{ WORKBENCH_NAME }}"
+      tags:
+        - deploy-vars
+      kubernetes.core.k8s_cp:
+        state: to_pod
+        namespace: "{{ WORKBENCH_NAMESPACE }}"
+        pod: "{{ WORKBENCH_NAME }}-0"
+        container: "{{ WORKBENCH_NAME }}"
+        remote_path: "/opt/app-root/src/{{ SITE_NAME }}/vars.yaml"
+        content: |-
+          {{ lookup('template', 'vars.yaml', convert_data=false) | replace('\{\{\{','{{{') | replace('\{\{\>','{{>') | replace('\{\{\#','{{#') | replace('\{\%','{%') | replace('\{\{','{{') | replace('\}\}\}', '}}}') | replace('\}\}', '}}') | replace('\%\}', '%}') }}
+        validate_certs: false
+    - name: "Create a symbolic link to project vars in home directory"
+      kubernetes.core.k8s_exec:
+        namespace: "{{ WORKBENCH_NAMESPACE }}"
+        pod: "{{ WORKBENCH_NAME }}-0"
+        command: >-
+          ln -sf /opt/app-root/src/{{ SITE_NAME }}/vars.yaml /opt/app-root/src/vars.yaml
+    - name: "Clone computate-base project"
+      tags:
+        - clone-repos
+        - skip-clone-repos
+      kubernetes.core.k8s_exec:
+        namespace: "{{ WORKBENCH_NAMESPACE }}"
+        pod: "{{ WORKBENCH_NAME }}-0"
+        command: >-
+          bash -c 'git clone https://github.com/computate-org/computate-base.git /opt/app-root/src/computate-base;
+          (cd /opt/app-root/src/computate-base && mvn clean install)'
+    - name: "Clone computate-search project"
+      tags:
+        - clone-repos
+        - skip-clone-repos
+      kubernetes.core.k8s_exec:
+        namespace: "{{ WORKBENCH_NAMESPACE }}"
+        pod: "{{ WORKBENCH_NAME }}-0"
+        command: >-
+          bash -c 'git clone https://github.com/computate-org/computate-search.git /opt/app-root/src/computate-search;
+          (cd /opt/app-root/src/computate-search && mvn clean install)'
+    - name: "Clone computate-vertx project"
+      tags:
+        - clone-repos
+        - skip-clone-repos
+      kubernetes.core.k8s_exec:
+        namespace: "{{ WORKBENCH_NAMESPACE }}"
+        pod: "{{ WORKBENCH_NAME }}-0"
+        command: >-
+          bash -c 'git clone https://github.com/computate-org/computate-vertx.git /opt/app-root/src/computate-vertx;
+          (cd /opt/app-root/src/computate-vertx && mvn clean install)'
+    - name: "Clone computate project"
+      tags:
+        - clone-repos
+        - skip-clone-repos
+      kubernetes.core.k8s_exec:
+        namespace: "{{ WORKBENCH_NAMESPACE }}"
+        pod: "{{ WORKBENCH_NAME }}-0"
+        command: >-
+          bash -c 'git clone https://github.com/computate-org/computate.git /opt/app-root/src/computate;
+          (cd /opt/app-root/src/computate && mvn clean install)'
+    - name: "Install python virtualenv"
+      kubernetes.core.k8s_exec:
+        namespace: "{{ WORKBENCH_NAMESPACE }}"
+        pod: "{{ WORKBENCH_NAME }}-0"
+        command: >-
+          virtualenv /opt/app-root/src/python
+    - name: "Configure .bashrc for workbench {{ WORKBENCH_NAME }}"
+      kubernetes.core.k8s_cp:
+        state: to_pod
+        namespace: "{{ WORKBENCH_NAMESPACE }}"
+        pod: "{{ WORKBENCH_NAME }}-0"
+        container: "{{ WORKBENCH_NAME }}"
+        remote_path: /opt/app-root/src/.bashrc
+        content: |-
+          {{ lookup('template', 'bashrc', convert_data=false) | indent(width=6, first=false) | replace('\{\{\{','{{{') | replace('\{\{\>','{{>') | replace('\{\{\#','{{#') | replace('\{\%','{%') | replace('\{\{','{{') | replace('\}\}\}', '}}}') | replace('\}\}', '}}') | replace('\%\}', '%}') }}
+        validate_certs: false
+    - name: "Install python dependencies"
+      kubernetes.core.k8s_exec:
+        namespace: "{{ WORKBENCH_NAMESPACE }}"
+        pod: "{{ WORKBENCH_NAME }}-0"
+        command: >-
+          /opt/app-root/src/python/bin/pip install jupyterlab bash_kernel ansible kubernetes openshift jinja2 jmespath pika --upgrade
+    - name: "Copy workbench Jupyter Notebooks and Ansible to {{ WORKBENCH_NAMESPACE }}"
+      tags:
+        - deploy-notebooks
+      kubernetes.core.k8s_exec:
+        namespace: "{{ WORKBENCH_NAMESPACE }}"
+        pod: "{{ WORKBENCH_NAME }}-0"
+        command: >-
+          bash -c 'git clone https://github.com/computate-org/smart-aquaculture-workbench.git /opt/app-root/src/smart-aquaculture-workbench;
+          rsync -r /opt/app-root/src/smart-aquaculture-workbench/ /opt/app-root/src/;
+          rm -rf /opt/app-root/src/smart-aquaculture-workbench/'
+    - name: "Index the computate-search classes"
+      tags:
+        - index-classes
+        - skip-index-classes
+      kubernetes.core.k8s_exec:
+        namespace: "{{ WORKBENCH_NAMESPACE }}"
+        pod: "{{ WORKBENCH_NAME }}-0"
+        command: >-
+          bash -i -c '
+            cd /opt/app-root/src;
+            eval $(./vars.py);
+            env VARS_PATH=$COMPUTATE_SEARCH_SRC/vars.yaml \
+              SITE_PATH=$COMPUTATE_SEARCH_SRC \
+              COMPUTATE_SRC=$COMPUTATE_SRC \
+              COMPUTATE_VERTX_SRC=$COMPUTATE_VERTX_SRC \
+              SITE_LANG=enUS \
+              $COMPUTATE_SRC/bin/enUS/index.sh
+            '
+    - name: "Index the computate-vertx classes"
+      tags:
+        - index-classes
+        - skip-index-classes
+      kubernetes.core.k8s_exec:
+        namespace: "{{ WORKBENCH_NAMESPACE }}"
+        pod: "{{ WORKBENCH_NAME }}-0"
+        command: >-
+          bash -i -c '
+            cd /opt/app-root/src;
+            eval $(./vars.py);
+            env VARS_PATH=$COMPUTATE_VERTX_SRC/vars.yaml \
+              SITE_PATH=$COMPUTATE_VERTX_SRC \
+              COMPUTATE_SRC=$COMPUTATE_SRC \
+              COMPUTATE_VERTX_SRC=$COMPUTATE_VERTX_SRC \
+              SITE_LANG=enUS \
+              $COMPUTATE_SRC/bin/enUS/index.sh
+            '
+    - name: "Create service in namespace {{ WORKBENCH_NAMESPACE }}"
+      kubernetes.core.k8s:
+        state: present
+        definition: "{{ lookup('template', 'service.yaml') }}"
+        validate_certs: false
+    - name: "Create network policy in namespace {{ WORKBENCH_NAMESPACE }}"
+      kubernetes.core.k8s:
+        state: present
+        definition: "{{ lookup('template', 'networkpolicy.yaml') }}"
+        validate_certs: false
+    - name: "Create route in namespace {{ WORKBENCH_NAMESPACE }}"
+      kubernetes.core.k8s:
+        state: present
+        definition: "{{ lookup('template', 'route.yaml') }}"
+        validate_certs: false
+
+    - name: "Create a keycloak initial admin secret in namespace {{ WORKBENCH_NAMESPACE }}"
+      kubernetes.core.k8s:
+        state: present
+        definition: "{{ lookup('template', 'keycloak-initial-admin-secret.yaml') }}"
+        validate_certs: false
+      when: WORKBENCH_ADMIN | bool == True and (query('kubernetes.core.k8s', kind='Secret', resource_name=('keycloak-initial-admin-' + SITE_NAME), namespace=WORKBENCH_NAMESPACE)[0].data['secret'] | default('')) == ''
+    - name: "Create solr fiware collection"
+      kubernetes.core.k8s_exec:
+        namespace: "{{ SOLR_NAMESPACE }}"
+        pod: solr-0
+        command: >-
+          bash -c '
+          env SOLR_AUTH_TYPE=basic SOLR_AUTHENTICATION_OPTS="-Dbasicauth=$SOLR_ADMIN_USERNAME:$SOLR_ADMIN_PASSWORD" /opt/bitnami/solr/bin/solr create_collection --solr-url http://localhost:8983 -c fiware -n computate
+          '
+      ignore_errors: true
+      when: WORKBENCH_ADMIN | bool == True
+    - name: "Index smart data models"
+      kubernetes.core.k8s_exec:
+        namespace: "{{ WORKBENCH_NAMESPACE }}"
+        pod: "{{ WORKBENCH_NAME }}-0"
+        command: >-
+          ansible-playbook -e @vars.yaml playbooks/clone-smart-model-data.yaml
+      ignore_errors: true
+      when: WORKBENCH_ADMIN | bool == True

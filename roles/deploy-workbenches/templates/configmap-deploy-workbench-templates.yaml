@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: deploy-workbench-templates
+  namespace: {{ WORKBENCH_NAMESPACE }}
+data:
+  persistentvolumeclaim.yaml: |
+    {{ lookup('file', 'persistentvolumeclaim.yaml') | indent(4, false) }}
+  defaultConfigmap.yaml: |
+    {{ lookup('file', 'defaultConfigmap.yaml') | indent(4, false) }}
+  configmap.yaml: |
+    {{ lookup('file', 'configmap.yaml') | indent(4, false) }}
+  notebook.yaml: |
+    {{ lookup('file', 'notebook.yaml') | indent(4, false) }}
+  vscodeSettings.json: |
+    {{ lookup('file', 'vscodeSettings.json') | indent(4, false) }}
+  userSettings.json: |
+    {{ lookup('file', 'userSettings.json') | indent(4, false) }}
+  keybindings.json: |
+    {{ lookup('file', 'keybindings.json') | indent(4, false) }}
+  vars.yaml: |
+    {{ lookup('file', 'vars.yaml') | indent(4, false) }}
+  bashrc: |
+    {{ lookup('file', 'bashrc') | indent(4, false) }}
+  keycloak-initial-admin-secret.yaml: |
+    {{ lookup('file', 'keycloak-initial-admin-secret.yaml') | indent(4, false) }}
+  service.yaml: |
+    {{ lookup('file', 'service.yaml') | indent(4, false) }}
+  networkpolicy.yaml: |
+    {{ lookup('file', 'networkpolicy.yaml') | indent(4, false) }}
+  route.yaml: |
+    {{ lookup('file', 'route.yaml') | indent(4, false) }}

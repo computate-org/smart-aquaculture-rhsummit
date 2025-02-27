@@ -26,6 +26,9 @@ metadata:
   namespace: {{ WORKBENCH_NAMESPACE }}
 subjects:
   - kind: ServiceAccount
+    name: deploy-workbench
+    namespace: {{ WORKBENCH_NAMESPACE }}
+  - kind: ServiceAccount
     name: {{ WORKBENCH_NAME }}
     namespace: {{ WORKBENCH_NAMESPACE }}
 roleRef:
@@ -39,6 +42,9 @@ metadata:
   name: sa-vscode-edit-rolebindings
   namespace: {{ WORKBENCH_NAMESPACE }}
 subjects:
+  - kind: ServiceAccount
+    name: deploy-workbench
+    namespace: {{ WORKBENCH_NAMESPACE }}
   - kind: ServiceAccount
     name: {{ WORKBENCH_NAME }}
     namespace: {{ WORKBENCH_NAMESPACE }}
@@ -93,6 +99,9 @@ metadata:
   namespace: solr
 subjects:
   - kind: ServiceAccount
+    name: deploy-workbench
+    namespace: {{ WORKBENCH_NAMESPACE }}
+  - kind: ServiceAccount
     name: {{ WORKBENCH_NAME }}
     namespace: {{ WORKBENCH_NAMESPACE }}
   - kind: User
@@ -121,6 +130,9 @@ metadata:
   name: {{ WORKBENCH_NAMESPACE }}
   namespace: postgres
 subjects:
+  - kind: ServiceAccount
+    name: deploy-workbench
+    namespace: {{ WORKBENCH_NAMESPACE }}
   - kind: ServiceAccount
     name: {{ WORKBENCH_NAME }}
     namespace: {{ WORKBENCH_NAMESPACE }}
