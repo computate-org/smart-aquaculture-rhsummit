@@ -197,8 +197,6 @@ SITE_STATIC_REPO: "git@github.com:\{\{ GITHUB_ORG \}\}/\{\{ SITE_STATIC_NAME \}\
 STATIC_PATH: "\{\{ (PARENT_SRC + '/' + SITE_STATIC_NAME) | realpath \}\}"
 # The base URL to the static files. 
 STATIC_BASE_URL: "\{\{ SITE_BASE_URL \}\}/static"
-# The site logo relative URI
-SITE_LOGO_URI: "/svg/computate-keys.svg"
 # The path to the template files. 
 TEMPLATE_PATH: "\{\{ SITE_SRC \}\}/src/main/resources/templates"
 # The path to the site page templates. 
@@ -218,6 +216,8 @@ WEB_COMPONENTS_JS: |-
 WEB_COMPONENTS_PREFIX: "wa-"
 # Site default theme, light or dark. 
 SITE_THEME: dark
+# The site logo relative URI
+SITE_LOGO_URI: "/svg/logo-{{ SITE_THEME }}.svg"
 
 ######################
 # Developer defaults #

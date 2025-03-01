@@ -8,7 +8,7 @@ data:
   SOLR_COLLECTION_{{ SITE_SHORT_NAME }}: '{{ SITE_SHORT_NAME }}-{{ USER_NAME }}'
   DATABASE_USERNAME_{{ SITE_SHORT_NAME }}: "{{ SITE_SHORT_NAME }}{{ USER_NAME | replace('-', '') | replace('_', '') }}"
   DATABASE_DATABASE_{{ SITE_SHORT_NAME }}: "{{ SITE_SHORT_NAME }}{{ USER_NAME | replace('-', '') | replace('_', '') }}"
-  AUTH_NAMESPACE_{{ SITE_SHORT_NAME }}: keycloak
+  AUTH_NAMESPACE_{{ SITE_SHORT_NAME }}: "{{ WORKBENCH_NAMESPACE }}"
   AUTH_HOST_NAME_{{ SITE_SHORT_NAME }}: "sso.computate.org"
   AUTH_REALM_{{ SITE_SHORT_NAME }}: "{{ SITE_SHORT_NAME | upper }}"
   AUTH_CLIENT_{{ SITE_SHORT_NAME }}: "{{ SITE_SHORT_NAME }}"

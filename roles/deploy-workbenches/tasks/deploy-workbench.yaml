@@ -40,12 +40,6 @@
     definition: "{{ lookup('template', 'postgres-secret.yaml') }}"
     validate_certs: false
   when: (query('kubernetes.core.k8s', kind='Secret', resource_name=('postgres-pguser-' + SITE_SHORT_NAME), namespace=WORKBENCH_NAMESPACE)[0].data['password'] | default('')) == ''
-- name: "Create a keycloak client secret in namespace {{ WORKBENCH_NAMESPACE }}"
-  kubernetes.core.k8s:
-    state: present
-    definition: "{{ lookup('template', 'keycloak-secret.yaml') }}"
-    validate_certs: false
-  when: (query('kubernetes.core.k8s', kind='Secret', resource_name=('keycloak-client-' + SITE_SHORT_NAME), namespace=WORKBENCH_NAMESPACE)[0].data['secret'] | default('')) == ''
 - name: "Create the deploy-workbench Ansible vars for workbench {{ WORKBENCH_NAME }} in namespace {{ WORKBENCH_NAMESPACE }}"
   kubernetes.core.k8s:
     state: present
