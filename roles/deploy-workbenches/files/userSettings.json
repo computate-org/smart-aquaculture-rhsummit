@@ -6,5 +6,7 @@
   , "terminal.integrated.sendKeybindingsToShell": true
   , "editor.inlayHints.enabled": "off"
   , "editor.renderWhitespace": "all"
+  , "editor.tabSize": 2
   , "terminal.integrated.scrollback": 10000
+  , "search.quickOpen.includeHistory": false
 }
