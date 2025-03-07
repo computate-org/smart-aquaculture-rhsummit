@@ -16,6 +16,7 @@ SITE_MAIN_VERTICLE_PACKAGE: org.computate.smartaquaculture.verticle
 SITE_POM_ARTIFACT_ID: smartaquaculture
 SITE_PORT: 10230
 SITE_SRC: "/opt/app-root/src/{{ SITE_NAME }}"
+SITE_THEME: dark
 COMPUTATE_SRC: "/opt/app-root/src/computate"
 COMPUTATE_VERTX_SRC: "/opt/app-root/src/computate-vertx"
 SOLR_NAMESPACE: solr
@@ -23,6 +24,6 @@ DATABASE_NAMESPACE: postgres
 ENABLE_FIWARE: true
 ADMIN_NAMESPACE: workbench-computate
 WORKBENCH_NAMES:
-#  - USER_NAME: computate
-#    WORKBENCH_ADMIN: true
+  - USER_NAME: computate
+    WORKBENCH_ADMIN: true
   - USER_NAME: user1

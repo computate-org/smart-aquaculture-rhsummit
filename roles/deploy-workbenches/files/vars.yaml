@@ -215,7 +215,7 @@ WEB_COMPONENTS_JS: |-
 # Switch between Shoelace "sl-" and Web Awesome "wa-" element prefixes. 
 WEB_COMPONENTS_PREFIX: "wa-"
 # Site default theme, light or dark. 
-SITE_THEME: dark
+SITE_THEME: {{ SITE_THEME }}
 # The site logo relative URI
 SITE_LOGO_URI: "/svg/logo-{{ SITE_THEME }}.svg"
 

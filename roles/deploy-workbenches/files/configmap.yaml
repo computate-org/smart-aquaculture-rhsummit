@@ -17,3 +17,4 @@ data:
   AUTH_ADMIN_USERNAME_{{ SITE_SHORT_NAME }}: "{{ 'admin' }}"
   AUTH_SCOPE_ADMIN_{{ SITE_SHORT_NAME }}: "{{ 'Admin' }}"
   AUTH_SCOPE_SUPER_ADMIN_{{ SITE_SHORT_NAME }}: "{{ 'SuperAdmin' }}"
+  SITE_THEME: {{ SITE_THEME }}

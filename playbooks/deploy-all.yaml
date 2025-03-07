@@ -1,0 +1,15 @@
+---
+- name: Deploy the whole Smart Aquaculture workshop
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  roles:
+    - overlay-vars
+    - deploy-cert-manager
+    - deploy-rhoai
+    - deploy-postgres
+    - deploy-keycloak
+    - deploy-zookeeper
+    - deploy-solr
+    - deploy-scorpiobroker
+    - deploy-workbenches
