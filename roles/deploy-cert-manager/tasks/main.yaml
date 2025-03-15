@@ -1,9 +1,4 @@
 ---
-- name: Deploy cert-manager
-  kubernetes.core.k8s:
-    state: present
-    src: https://github.com/cert-manager/cert-manager/releases/download/v1.15.1/cert-manager.yaml
-    validate_certs: false
 - name: Wait for cert-manager Ready condition
   kubernetes.core.k8s_info:
     namespace: cert-manager

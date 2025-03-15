@@ -23,6 +23,8 @@
     definition: "{{ lookup('kubernetes.core.kustomize', dir='features/rhoai/') }}"
     validate_certs: false
   retries: 10
+  register: result
+  until: result is not failed
   delay: 30
 - name: Wait for OpenShift AI Ready condition
   kubernetes.core.k8s_info:

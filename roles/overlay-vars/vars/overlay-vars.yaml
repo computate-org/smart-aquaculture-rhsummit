@@ -2,12 +2,12 @@
 GITHUB_ORG: computate-org
 CLUSTER_ADMIN_GROUP: smart-aquaculture
 AUTH_NAMESPACE: keycloak
-AUTH_HOST_NAME: "{{ query('kubernetes.core.k8s', kind='Ingress', resource_name='keycloak-ingress', namespace=AUTH_NAMESPACE, api_version='networking.k8s.io/v1')[0].spec.rules[0].host }}"
+OPENSHIFT_APPS_DOMAIN: apps-crc.testing
+AUTH_HOST_NAME: "keycloak.{{ OPENSHIFT_APPS_DOMAIN }}"
 AUTH_URL: "https://{{ AUTH_HOST_NAME }}"
 AUTH_REALM: SMARTAQUACULTURE
 AUTH_CLIENT: smartaquaculture
 SITE_NAMESPACE: smartaquaculture
-OPENSHIFT_APPS_DOMAIN: apps-crc.testing
 WORKBENCH_SIZE: 20Gi
 SITE_SHORT_NAME: smartaquaculture
 SITE_NAME: smart-aquaculture
@@ -27,3 +27,4 @@ WORKBENCH_NAMES:
   - USER_NAME: computate
     WORKBENCH_ADMIN: true
   - USER_NAME: user1
+  - USER_NAME: user2

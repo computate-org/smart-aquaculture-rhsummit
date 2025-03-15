@@ -7,10 +7,16 @@
   k8s:
     state: present
     definition: "{{ lookup('template', 'postgres-pguser-keycloak-secret.yaml') }}"
+- name: "Deploy keycloak certificate on OpenShift"
+  kubernetes.core.k8s:
+    state: present
+    namespace: keycloak
+    definition: "{{ lookup('template', 'certificate.yaml') }}"
 - name: "Deploy keycloak on OpenShift"
   kubernetes.core.k8s:
     state: present
-    definition: "{{ lookup('kubernetes.core.kustomize', dir='features/keycloak/') }}"
+    namespace: keycloak
+    definition: "{{ lookup('template', 'keycloak.yaml') }}"
 - name: Wait for keycloak Ready condition
   kubernetes.core.k8s_info:
     namespace: keycloak
@@ -19,7 +25,7 @@
       - app=keycloak
       - apps.kubernetes.io/pod-index=0
     wait: true
-    wait_timeout: 300
+    wait_timeout: 600
     wait_condition:
       type: Ready
       status: 'True'

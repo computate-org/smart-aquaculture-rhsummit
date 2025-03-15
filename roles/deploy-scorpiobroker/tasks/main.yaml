@@ -1,4 +1,8 @@
 ---
+- name: "Deploy scorpiobroker cluster-scope bundle on OpenShift"
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('kubernetes.core.kustomize', dir='bundles/scorpiobroker/') }}"
 - name: "Install database secret on OpenShift"
   k8s:
     state: present
