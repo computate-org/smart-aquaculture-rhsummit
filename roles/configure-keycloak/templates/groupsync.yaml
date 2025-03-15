@@ -7,10 +7,10 @@ spec:
   # synchronize every 4 hours
   schedule: "*/10 * * * *"
   providers:
-    - name: github
-      github:
-        organization: "{{ GITHUB_ORG }}"
-        prune: true
+    - name: keycloak
+      keycloak:
+        realm: {{ AUTH_REALM }}
         credentialsSecret:
-          name: github-group-sync
+          name: openshift-group-sync
           namespace: group-sync-operator
+        url: {{ AUTH_URL }}

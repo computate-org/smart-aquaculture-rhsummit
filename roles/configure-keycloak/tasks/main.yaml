@@ -193,26 +193,31 @@
       baseUrl: "https://api{{ OPENSHIFT_APPS_DOMAIN | regex_replace('^[^\\.]*') }}:6443"
       clientId: "keycloak"
       clientSecret: "{{ keycloak_oauth_client_2.resources[0].secret }}"
-#
-#- name: "Install group-sync-operator bundle on OpenShift"
-#  kubernetes.core.k8s:
-#    state: present
-#    definition: "{{ lookup('kubernetes.core.kustomize', dir='kustomize/cluster-scope/bundles/group-sync-operator/') }}"
-#    validate_certs: false
-#- name: "Install github-group-sync secret on OpenShift"
-#  kubernetes.core.k8s:
-#    state: present
-#    definition: "{{ lookup('template', 'github-group-sync-secret.yaml') }}"
-#    validate_certs: false
-#  when: (query('kubernetes.core.k8s', kind='Secret', resource_name=('github-group-sync'), namespace='group-sync-operator')[0].data['privateKey'] | default('')) == ''
-#- name: "Install groupsync on OpenShift"
-#  kubernetes.core.k8s:
-#    state: present
-#    definition: "{{ lookup('template', 'groupsync.yaml') }}"
-#    validate_certs: false
-#
-#- name: "Install OAuth with GITHUB_OPENSHIFT_CLIENT on OpenShift"
-#  kubernetes.core.k8s:
-#    state: present
-#    definition: "{{ lookup('template', 'oauth.yaml') }}"
-#    validate_certs: false
+
+- name: "Install group-sync-operator bundle on OpenShift"
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('kubernetes.core.kustomize', dir='bundles/group-sync-operator/') }}"
+    validate_certs: false
+- name: "Install github-group-sync secret on OpenShift"
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'openshift-group-sync-secret.yaml') }}"
+    validate_certs: false
+  when: (query('kubernetes.core.k8s', kind='Secret', resource_name=('github-group-sync'), namespace='group-sync-operator')[0].data['privateKey'] | default('')) == ''
+- name: Wait for group-sync-operator Ready condition
+  kubernetes.core.k8s_info:
+    namespace: group-sync-operator
+    kind: Pod
+    label_selectors:
+      - control-plane=group-sync-operator
+    wait: true
+    wait_timeout: 300
+    wait_condition:
+      type: Ready
+      status: 'True'
+- name: "Install groupsync on OpenShift"
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'groupsync.yaml') }}"
+    validate_certs: false
