@@ -1,13 +1,13 @@
 ---
-- name: "Install {{ 'keycloak-client-' + (AUTH_CLIENT | lower ) }} secret in namespace {{ WORKBENCH_NAMESPACE }}"
-  kubernetes.core.k8s:
-    state: present
-    definition: "{{ lookup('template', 'auth-client-secret.yaml') }}"
-    validate_certs: false
 - name: "Create a namespace {{ WORKBENCH_NAMESPACE }}"
   kubernetes.core.k8s:
     state: present
     definition: "{{ lookup('template', 'namespace.yaml') }}"
+    validate_certs: false
+- name: "Install {{ 'keycloak-client-' + (AUTH_CLIENT | lower ) }} secret in namespace {{ WORKBENCH_NAMESPACE }}"
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'auth-client-secret.yaml') }}"
     validate_certs: false
 - name: "Create the deploy-workbench service account for workbench {{ WORKBENCH_NAME }} in namespace {{ WORKBENCH_NAMESPACE }}"
   kubernetes.core.k8s:
@@ -32,6 +32,7 @@
     state: present
     definition: "{{ lookup('template', 'font-awesome-secret.yaml') }}"
     validate_certs: false
+  ignore_errors: true
 - name: "Create a postgres secret in namespace {{ WORKBENCH_NAMESPACE }}"
   tags:
     - create-database
