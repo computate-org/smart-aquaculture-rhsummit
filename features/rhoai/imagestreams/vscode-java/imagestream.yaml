@@ -21,11 +21,11 @@ spec:
   lookupPolicy:
     local: true
   tags:
-    - name: 1.2.0
+    - name: 1.4.0
       annotations: null
       from:
         kind: DockerImage
-        name: 'quay.io/computate/vscode-java:ansible'
+        name: 'quay.io/nerc-images/vscode-java:1.4.0'
       importPolicy:
         scheduled: true
       referencePolicy:
