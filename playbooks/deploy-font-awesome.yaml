@@ -1,0 +1,8 @@
+---
+- name: Deploy font-awesome
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  roles:
+    - overlay-vars
+    - deploy-font-awesome

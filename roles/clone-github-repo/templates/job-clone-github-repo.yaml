@@ -1,0 +1,53 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: clone-github-repo
+  namespace: {{ WORKBENCH_NAMESPACE }}
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      serviceAccountName: deploy-workbench
+      volumes:
+        - name: clone-github-repo-defaults
+          configMap:
+            name: clone-github-repo-defaults
+        - name: clone-github-repo-playbook
+          configMap:
+            name: clone-github-repo-playbook
+        - name: clone-github-repo-tasks
+          configMap:
+            name: clone-github-repo-tasks
+        - name: clone-github-repo-templates
+          configMap:
+            name: clone-github-repo-templates
+        - name: home
+          emptyDir: {}
+        - name: ansible-tmp
+          emptyDir: {}
+      containers:
+        - name: clone-github-repo
+          image: quay.io/nerc-images/keycloak-ansible:latest
+          volumeMounts:
+            - name: clone-github-repo-playbook
+              mountPath: /home/ansible/.ansible/
+            - name: clone-github-repo-defaults
+              mountPath: /home/ansible/.ansible/roles/clone-github-repo/defaults/
+            - name: clone-github-repo-templates
+              mountPath: /home/ansible/.ansible/roles/clone-github-repo/templates/
+            - name: clone-github-repo-tasks
+              mountPath: /home/ansible/.ansible/roles/clone-github-repo/tasks/
+            - name: home
+              mountPath: /home/ansible
+            - name: ansible-tmp
+              mountPath: /home/ansible/.ansible/tmp/
+          env:
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          command: ["/bin/bash", "-c", "--"]
+          args:
+            - |
+                ansible-playbook /home/ansible/.ansible/clone-github-repo.yaml

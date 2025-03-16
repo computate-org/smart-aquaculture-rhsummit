@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: clone-github-repo-playbook
+  namespace: {{ WORKBENCH_NAMESPACE }}
+data:
+  clone-github-repo.yaml: |
+    ---
+    - name: Deploy workbench
+      hosts: localhost
+      connection: local
+      gather_facts: false
+      roles:
+        - clone-github-repo

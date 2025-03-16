@@ -1,0 +1,8 @@
+---
+- name: clone-github-repo
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  roles:
+    - overlay-vars
+    - clone-github-repo

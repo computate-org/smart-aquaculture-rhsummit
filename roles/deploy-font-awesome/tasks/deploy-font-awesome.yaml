@@ -1,0 +1,7 @@
+---
+- name: "Create a font awesome secret in namespace {{ WORKBENCH_NAMESPACE }}"
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'font-awesome-secret.yaml') }}"
+    validate_certs: false
+  ignore_errors: true

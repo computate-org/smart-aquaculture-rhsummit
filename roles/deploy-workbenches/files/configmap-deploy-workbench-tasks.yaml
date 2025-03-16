@@ -2,8 +2,11 @@ apiVersion: v1
 kind: ConfigMap
 data:
   main.yaml: |
-    - debug:
-        var: WORKBENCH_ADMIN
+    - name: "Create a keycloak initial admin secret in namespace {{ WORKBENCH_NAMESPACE }}"
+      kubernetes.core.k8s:
+        state: present
+        definition: "{{ lookup('template', 'keycloak-initial-admin-secret.yaml') }}"
+        validate_certs: false
     - name: "Create a Persistent Volume Claim for {{ WORKBENCH_NAME }}"
       kubernetes.core.k8s:
         state: present
@@ -228,12 +231,6 @@ data:
         definition: "{{ lookup('template', 'route.yaml') }}"
         validate_certs: false
 
-    - name: "Create a keycloak initial admin secret in namespace {{ WORKBENCH_NAMESPACE }}"
-      kubernetes.core.k8s:
-        state: present
-        definition: "{{ lookup('template', 'keycloak-initial-admin-secret.yaml') }}"
-        validate_certs: false
-      when: WORKBENCH_ADMIN | bool == True and (query('kubernetes.core.k8s', kind='Secret', resource_name=('keycloak-initial-admin-' + SITE_NAME), namespace=WORKBENCH_NAMESPACE)[0].data['secret'] | default('')) == ''
     - name: "Create solr fiware collection"
       kubernetes.core.k8s_exec:
         namespace: "{{ SOLR_NAMESPACE }}"

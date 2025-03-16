@@ -194,11 +194,11 @@ SITE_STATIC_NAME: "\{\{ SITE_NAME \}\}-static"
 # The static files git repository for the project. 
 SITE_STATIC_REPO: "git@github.com:\{\{ GITHUB_ORG \}\}/\{\{ SITE_STATIC_NAME \}\}.git"
 # The path to the static files. 
-STATIC_PATH: "\{\{ (PARENT_SRC + '/' + SITE_STATIC_NAME) | realpath \}\}"
+STATIC_PATH: "\{\{ (SITE_SRC + '/../' + SITE_STATIC_NAME + '/' + ('webawesome' if WEB_COMPONENTS_PREFIX == 'wa-' else 'shoelace')) | realpath \}\}"
 # The base URL to the static files. 
 STATIC_BASE_URL: "\{\{ SITE_BASE_URL \}\}/static"
 # The path to the template files. 
-TEMPLATE_PATH: "\{\{ SITE_SRC \}\}/src/main/resources/templates"
+TEMPLATE_PATH: "\{\{ STATIC_PATH \}\}/templates"
 # The path to the site page templates. 
 DYNAMIC_PAGE_PATHS:
   - "en-us/article"

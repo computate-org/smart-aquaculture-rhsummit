@@ -1,0 +1,37 @@
+---
+- name: "Create the clone-github-repo Ansible defaults for workbench {{ WORKBENCH_NAME }} in namespace {{ WORKBENCH_NAMESPACE }}"
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'configmap-clone-github-repo-defaults.yaml') }}"
+    validate_certs: false
+- name: "Create the clone-github-repo Ansible tasks for workbench {{ WORKBENCH_NAME }} in namespace {{ WORKBENCH_NAMESPACE }}"
+  kubernetes.core.k8s:
+    state: present
+    name: clone-github-repo-tasks
+    namespace: "{{ WORKBENCH_NAMESPACE }}"
+    definition: |-
+      {{ lookup('file', 'configmap-clone-github-repo-tasks.yaml') }}
+    validate_certs: false
+- name: "Create the clone-github-repo Ansible playbook for workbench {{ WORKBENCH_NAME }} in namespace {{ WORKBENCH_NAMESPACE }}"
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'configmap-clone-github-repo-playbook.yaml') }}"
+    validate_certs: false
+- name: "Create the clone-github-repo Ansible templates for workbench {{ WORKBENCH_NAME }} in namespace {{ WORKBENCH_NAMESPACE }}"
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'configmap-clone-github-repo-templates.yaml') }}"
+    validate_certs: false
+- name: "Remove the clone-github-repo Job if it exists for workbench {{ WORKBENCH_NAME }} in namespace {{ WORKBENCH_NAMESPACE }}"
+  kubernetes.core.k8s:
+    state: absent
+    namespace: "{{ WORKBENCH_NAMESPACE }}"
+    api_version: batch/v1
+    kind: Job
+    name: clone-github-repo
+    validate_certs: false
+- name: "Create the clone-github-repo Job for workbench {{ WORKBENCH_NAME }} in namespace {{ WORKBENCH_NAMESPACE }}"
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'job-clone-github-repo.yaml') }}"
+    validate_certs: false
