@@ -15,14 +15,14 @@
     wait_condition:
       type: Ready
       status: 'True'
-  retries: 10
+  retries: 20
   delay: 30
 - name: "Install Red Hat OpenShift AI feature on OpenShift"
   kubernetes.core.k8s:
     state: present
     definition: "{{ lookup('kubernetes.core.kustomize', dir='features/rhoai/') }}"
     validate_certs: false
-  retries: 10
+  retries: 20
   register: result
   until: result is not failed
   delay: 30
@@ -37,5 +37,5 @@
     wait_condition:
       type: Ready
       status: 'True'
-  retries: 10
+  retries: 20
   delay: 30

@@ -4,5 +4,5 @@ metadata:
   name: keycloak
 secret: "{{ lookup('password', '/dev/null length=32 chars=ascii_letters') }}"
 redirectURIs:
-  - '{{ AUTH_URL }}/realms/{{ AUTH_REALM }}/broker/openshift-v4/endpoint'
+  - '{{ AUTH_URL }}/realms/{{ AUTH_REALM }}/broker/openshift/endpoint'
 grantMethod: prompt

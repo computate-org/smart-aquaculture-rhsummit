@@ -17,6 +17,8 @@
     state: present
     namespace: keycloak
     definition: "{{ lookup('template', 'keycloak.yaml') }}"
+  retries: 20
+  delay: 30
 - name: Wait for keycloak Ready condition
   kubernetes.core.k8s_info:
     namespace: keycloak

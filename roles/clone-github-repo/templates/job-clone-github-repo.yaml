@@ -43,6 +43,8 @@ spec:
             - name: ansible-tmp
               mountPath: /home/ansible/.ansible/tmp/
           env:
+            - name: WORKBENCH_ADMIN
+              value: "{{ WORKBENCH_ADMIN | lower }}"
             - name: POD_NAMESPACE
               valueFrom:
                 fieldRef:

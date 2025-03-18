@@ -11,4 +11,5 @@
     - deploy-zookeeper
     - deploy-solr
     - deploy-scorpiobroker
+    - configure-keycloak
     - deploy-workbenches

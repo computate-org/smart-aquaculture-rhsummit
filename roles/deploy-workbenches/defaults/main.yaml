@@ -1,0 +1,4 @@
+---
+WORKBENCH_COUNT: 2
+AUTH_ADMIN_USERNAME: "{{ query('kubernetes.core.k8s', kind='Secret', resource_name=('keycloak-initial-admin'), namespace=AUTH_NAMESPACE)[0].data['username'] | b64decode }}"
+AUTH_ADMIN_PASSWORD: "{{ query('kubernetes.core.k8s', kind='Secret', resource_name=('keycloak-initial-admin'), namespace=AUTH_NAMESPACE)[0].data['password'] | b64decode }}"

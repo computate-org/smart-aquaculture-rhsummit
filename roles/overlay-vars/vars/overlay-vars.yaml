@@ -23,8 +23,3 @@ SOLR_NAMESPACE: solr
 DATABASE_NAMESPACE: postgres
 ENABLE_FIWARE: true
 ADMIN_NAMESPACE: workbench-computate
-WORKBENCH_NAMES:
-  - USER_NAME: computate
-    WORKBENCH_ADMIN: true
-  - USER_NAME: user1
-  - USER_NAME: user2

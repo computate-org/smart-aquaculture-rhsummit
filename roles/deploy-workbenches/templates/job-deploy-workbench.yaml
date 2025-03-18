@@ -43,6 +43,10 @@ spec:
             - name: ansible-tmp
               mountPath: /home/ansible/.ansible/tmp/
           env:
+            - name: AUTH_ADMIN_USERNAME
+              value: "{{ AUTH_ADMIN_USERNAME if WORKBENCH_ADMIN else '' }}"
+            - name: AUTH_ADMIN_PASSWORD
+              value: "{{ AUTH_ADMIN_PASSWORD if WORKBENCH_ADMIN else '' }}"
             - name: POD_NAMESPACE
               valueFrom:
                 fieldRef:

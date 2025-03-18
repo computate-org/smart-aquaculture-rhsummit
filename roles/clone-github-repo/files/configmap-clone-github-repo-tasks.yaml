@@ -2,6 +2,12 @@ apiVersion: v1
 kind: ConfigMap
 data:
   main.yaml: |
+    - name: "Create launch.json"
+      kubernetes.core.k8s_exec:
+        namespace: "{{ WORKBENCH_NAMESPACE }}"
+        pod: "{{ WORKBENCH_NAME }}-0"
+        command: >-
+          ansible-playbook -e @vars.yaml -e FILE_PATH="/opt/app-root/src/.vscode/launch.json" -e FILE_TEMPLATE=launch.json playbooks/create-file.yaml
     - name: "Clone {{ SITE_NAME }} project"
       tags:
         - clone-repos
@@ -15,6 +21,16 @@ data:
           git clone https://github.com/{{ GITHUB_ORG }}/{{ SITE_NAME }}.git {{ SITE_SRC }};
           (cd {{ SITE_SRC }} && mvn clean install)
           '
+    - name: "Run authorization generator"
+      kubernetes.core.k8s_exec:
+        namespace: "{{ WORKBENCH_NAMESPACE }}"
+        pod: "{{ WORKBENCH_NAME }}-0"
+        command: >-
+          bash -c '
+          cd {{ SITE_SRC }};
+          env RUN_SQL_GENERATOR=true RUN_AUTHORIZATION_GENERATOR=true VARS_PATH="{{ SITE_SRC }}/vars.yaml" mvn exec:java -Dexec.mainClass="{{ SITE_MAIN_VERTICLE_PACKAGE }}.MainVerticle"
+          '
+      when: lookup('env', 'WORKBENCH_ADMIN') == 'true'
     - name: "Clone {{ SITE_NAME }}-static project"
       tags:
         - clone-repos

@@ -2,16 +2,16 @@
 
 - name: "Deploy workbenches"
   include_tasks: deploy-font-awesome.yaml
-  loop: "{{ WORKBENCH_NAMES }}"
   vars:
-    WORKBENCH_NAMESPACE: "workbench-{{ WORKBENCH_VARS.USER_NAME }}"
+    WORKBENCH_NAMESPACE: "workbench-{{ 'computate' if WORKBENCH_NUM == 0 else 'user' + (WORKBENCH_NUM | string) }}"
     WORKBENCH_NAME: "vscode"
-    USER_NAME: "{{ WORKBENCH_VARS.USER_NAME }}"
-    WORKBENCH_ADMIN: "{{ WORKBENCH_VARS.WORKBENCH_ADMIN is defined and WORKBENCH_VARS.WORKBENCH_ADMIN | bool }}"
-    DATABASE_USERNAME: "{{ SITE_SHORT_NAME }}{{ WORKBENCH_VARS.USER_NAME | replace('-', '') | replace('_', '') }}"
-    DATABASE_DATABASE: "{{ SITE_SHORT_NAME }}{{ WORKBENCH_VARS.USER_NAME | replace('-', '') | replace('_', '') }}"
-    SOLR_COLLECTION: '{{ SITE_SHORT_NAME }}-{{ WORKBENCH_VARS.USER_NAME }}'
-    SOLR_COLLECTION_COMPUTATE: 'computate-{{ WORKBENCH_VARS.USER_NAME }}'
+    USER_NAME: "{{ 'computate' if WORKBENCH_NUM == 0 else 'user' + (WORKBENCH_NUM | string) }}"
+    WORKBENCH_ADMIN: "{{ WORKBENCH_NUM == 0 }}"
+    DATABASE_USERNAME: "{{ SITE_SHORT_NAME }}{{ 'computate' if WORKBENCH_NUM == 0 else 'user' + (WORKBENCH_NUM | string) }}"
+    DATABASE_DATABASE: "{{ SITE_SHORT_NAME }}{{ 'computate' if WORKBENCH_NUM == 0 else 'user' + (WORKBENCH_NUM | string) }}"
+    SOLR_COLLECTION: "{{ SITE_SHORT_NAME }}-{{ 'computate' if WORKBENCH_NUM == 0 else 'user' + (WORKBENCH_NUM | string) }}"
+    SOLR_COLLECTION_COMPUTATE: "computate-{{ 'computate' if WORKBENCH_NUM == 0 else 'user' + (WORKBENCH_NUM | string) }}"
+  loop: "{{ range(0, (WORKBENCH_COUNT | int) + 1, 1) | list }}"
   loop_control:
-    loop_var: WORKBENCH_VARS
+    loop_var: WORKBENCH_NUM
     index_var: WORKBENCH_INDEX
