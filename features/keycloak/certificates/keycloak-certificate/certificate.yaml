@@ -5,7 +5,7 @@ metadata:
   namespace: keycloak
 spec:
   issuerRef:
-    name: self-signed
+    name: letsencrypt-production-http01
     kind: ClusterIssuer
   isCA: true
   secretName: keycloak-certificate

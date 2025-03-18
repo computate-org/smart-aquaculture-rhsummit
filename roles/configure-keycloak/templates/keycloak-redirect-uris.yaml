@@ -1,5 +1,5 @@
 - "https://oauth-openshift.{{ OPENSHIFT_APPS_DOMAIN }}/oauth2callback/Keycloak"
-{% for WORKBENCH_VARS in WORKBENCH_NAMES %}
-- "https://{{ SITE_SHORT_NAME }}-{{ WORKBENCH_VARS.USER_NAME }}.{{ OPENSHIFT_APPS_DOMAIN }}/callback"
-- "https://{{ SITE_SHORT_NAME }}-{{ WORKBENCH_VARS.USER_NAME }}.{{ OPENSHIFT_APPS_DOMAIN }}/logout"
+{% for WORKBENCH_NUM in range(0, (WORKBENCH_COUNT | int) + 1, 1) | list %}
+- "https://{{ SITE_SHORT_NAME }}-{{ 'computate' if WORKBENCH_NUM == 0 else 'user' + (WORKBENCH_NUM | string) }}.{{ OPENSHIFT_APPS_DOMAIN }}/callback"
+- "https://{{ SITE_SHORT_NAME }}-{{ 'computate' if WORKBENCH_NUM == 0 else 'user' + (WORKBENCH_NUM | string) }}.{{ OPENSHIFT_APPS_DOMAIN }}/logout"
 {% endfor %}

@@ -3,6 +3,17 @@
   kubernetes.core.k8s:
     state: present
     definition: "{{ lookup('kubernetes.core.kustomize', dir='bundles/keycloak/') }}"
+- name: Wait for keycloak operator Ready condition
+  kubernetes.core.k8s_info:
+    namespace: keycloak
+    kind: Pod
+    label_selectors:
+      - name=rhbk-operator
+    wait: true
+    wait_timeout: 300
+    wait_condition:
+      type: Ready
+      status: 'True'
 - name: "Install database secret on OpenShift"
   k8s:
     state: present

@@ -42,11 +42,11 @@ spec:
       options: "SUPERUSER CREATEDB"
       databases:
         - "scorpiobroker"
-{% for WORKBENCH_VARS in WORKBENCH_NAMES %}
-    - name: "{{ SITE_SHORT_NAME }}{{ WORKBENCH_VARS.USER_NAME | replace('-', '') | replace('_', '') }}"
+{% for WORKBENCH_NUM in range(0, (WORKBENCH_COUNT | int) + 1, 1) | list %}
+    - name: "{{ SITE_SHORT_NAME }}{{ 'computate' if WORKBENCH_NUM == 0 else 'user' + (WORKBENCH_NUM | string) }}"
       options: "SUPERUSER"
       databases:
-        - "{{ SITE_SHORT_NAME }}{{ WORKBENCH_VARS.USER_NAME | replace('-', '') | replace('_', '') }}"
+        - "{{ SITE_SHORT_NAME }}{{ 'computate' if WORKBENCH_NUM == 0 else 'user' + (WORKBENCH_NUM | string) }}"
 {% endfor %}
   patroni:
     dynamicConfiguration:
@@ -58,7 +58,7 @@ spec:
           - "local smartaquaculture smartaquaculture trust"
           - "host all scorpiobroker all md5"
           - "local all scorpiobroker trust"
-{% for WORKBENCH_VARS in WORKBENCH_NAMES %}
-          - "host {{ SITE_SHORT_NAME }}{{ WORKBENCH_VARS.USER_NAME | replace('-', '') | replace('_', '') }} {{ SITE_SHORT_NAME }}{{ WORKBENCH_VARS.USER_NAME | replace('-', '') | replace('_', '') }} all md5"
-          - "local {{ SITE_SHORT_NAME }}{{ WORKBENCH_VARS.USER_NAME | replace('-', '') | replace('_', '') }} {{ SITE_SHORT_NAME }}{{ WORKBENCH_VARS.USER_NAME | replace('-', '') | replace('_', '') }} trust"
+{% for WORKBENCH_NUM in range(0, (WORKBENCH_COUNT | int) + 1, 1) | list %}
+          - "host {{ SITE_SHORT_NAME }}{{ 'computate' if WORKBENCH_NUM == 0 else 'user' + (WORKBENCH_NUM | string) }} {{ SITE_SHORT_NAME }}{{ 'computate' if WORKBENCH_NUM == 0 else 'user' + (WORKBENCH_NUM | string) }} all md5"
+          - "local {{ SITE_SHORT_NAME }}{{ 'computate' if WORKBENCH_NUM == 0 else 'user' + (WORKBENCH_NUM | string) }} {{ SITE_SHORT_NAME }}{{ 'computate' if WORKBENCH_NUM == 0 else 'user' + (WORKBENCH_NUM | string) }} trust"
 {% endfor %}

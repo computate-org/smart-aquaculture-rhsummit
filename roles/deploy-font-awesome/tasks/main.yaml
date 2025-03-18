@@ -1,5 +1,10 @@
 ---
 
+- name: "Create a namespace {{ SITE_NAMESPACE }}"
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'namespace.yaml') }}"
+    validate_certs: false
 - name: "Deploy workbenches"
   include_tasks: deploy-font-awesome.yaml
   vars:

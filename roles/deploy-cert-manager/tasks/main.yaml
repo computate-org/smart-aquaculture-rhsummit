@@ -14,10 +14,10 @@
   kubernetes.core.k8s:
     state: present
     definition: "{{ lookup('kubernetes.core.kustomize', dir='features/cert-manager/') }}"
-- name: Wait for cert-manager ClusterIssuer self-signed Ready condition
+- name: Wait for cert-manager ClusterIssuer letsencrypt-production-http01 Ready condition
   kubernetes.core.k8s_info:
     kind: ClusterIssuer
-    name: self-signed
+    name: letsencrypt-production-http01
     wait: true
     wait_timeout: 300
     wait_condition:
