@@ -10,6 +10,7 @@
     - deploy-keycloak
     - deploy-zookeeper
     - deploy-solr
+    - deploy-amq-broker
     - deploy-scorpiobroker
     - deploy-font-awesome
     - configure-keycloak

@@ -1,0 +1,41 @@
+---
+- name: "Install Red Hat AMQ Broker bundle on OpenShift"
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('kubernetes.core.kustomize', dir='bundles/amq-broker/') }}"
+    validate_certs: false
+- name: Wait for AMQ Broker Operator Ready condition
+  kubernetes.core.k8s_info:
+    namespace: openshift-operators
+    kind: Pod
+    label_selectors:
+      - name=amq-broker-operator
+    wait: true
+    wait_timeout: 300
+    wait_condition:
+      type: Ready
+      status: 'True'
+  retries: 20
+  delay: 30
+- name: "Install Red Hat AMQ Broker feature on OpenShift"
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('kubernetes.core.kustomize', dir='features/amq-broker/') }}"
+    validate_certs: false
+  retries: 20
+  register: result
+  until: result is not failed
+  delay: 30
+- name: Wait for AMQ Broker Ready condition
+  kubernetes.core.k8s_info:
+    namespace: "{{ SITE_NAMESPACE }}"
+    kind: Pod
+    label_selectors:
+      - ActiveMQArtemis=import-broker
+    wait: true
+    wait_timeout: 300
+    wait_condition:
+      type: Ready
+      status: 'True'
+  retries: 20
+  delay: 30

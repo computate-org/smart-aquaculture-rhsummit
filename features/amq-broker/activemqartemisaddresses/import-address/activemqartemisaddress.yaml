@@ -1,0 +1,13 @@
+apiVersion: broker.amq.io/v1beta1
+kind: ActiveMQArtemisAddress
+metadata:
+  name: import-address
+  namespace: smartaquaculture
+spec:
+  addressName: import-address
+  queueName: import-queue
+  routingType: multicast
+  removeFromBrokerOnDelete: false
+  queueConfiguration:
+    enabled: true
+  
