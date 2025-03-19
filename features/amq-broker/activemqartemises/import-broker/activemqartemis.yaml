@@ -2,7 +2,7 @@ apiVersion: broker.amq.io/v1beta1
 kind: ActiveMQArtemis
 metadata:
   name: import-broker
-  namespace: smartaquaculture
+  namespace: amq-broker
 spec:
   acceptors:
     - name: mqtt

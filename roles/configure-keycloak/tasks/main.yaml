@@ -67,6 +67,7 @@
           alias: openshift
           config:
             defaultProvider: openshift
+  ignore_errors: true
 
 - name: Reconfigure keycloak realm with new browserFlow
   community.general.keycloak_realm:

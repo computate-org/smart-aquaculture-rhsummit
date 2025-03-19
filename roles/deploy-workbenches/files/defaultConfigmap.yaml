@@ -34,5 +34,13 @@ data:
   NGSILD_TENANT_ENV: "NGSILD_TENANT"
   NGSILD_PATH_ENV: "NGSILD_PATH"
   ENABLE_FIWARE: "{{ ENABLE_FIWARE | string | lower }}"
-  DATABASE_HOST: "postgres-primary.postgres.svc"
+  DATABASE_HOST_NAME: "postgres-primary.postgres.svc"
   DATABASE_PORT: "5432"
+  SITE_POWERED_BY_NAME: "Red Hat Demo Platform"
+  SITE_POWERED_BY_URL: "https://catalog.demo.redhat.com"
+  ENABLE_MQTT: 'true'
+  MQTT_NAMESPACE: amq-broker
+  MQTT_PORT: '1883'
+  MQTT_HOST_NAME: "import-broker-mqtt-0-svc.amq-broker.svc"
+  MQTT_USER: "user"
+  MQTT_PASSWORD: "password"

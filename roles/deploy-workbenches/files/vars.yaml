@@ -30,12 +30,12 @@ VARS_FILENAME: vars.yaml
 VARS_PATH: "\{\{ SITE_SRC \}\}/\{\{ VARS_FILENAME \}\}"
 # A shorter name for the application used for database names, collections, and artifact IDs. 
 SITE_SHORT_NAME: "smartaquaculture"
-# The namespace in OpenShift where the site will run. 
-SITE_NAMESPACE: "\{\{ lookup('env', 'SITE_NAMESPACE') | default(SITE_SHORT_NAME, true) \}\}"
 # A pretty version of the site name. 
 SITE_DISPLAY_NAME: Smart Aquaculture
 # A short description of the site. 
 SITE_DESCRIPTION: "Caring for fish populations, fisheries, and feeding of fish and people"
+# The namespace in OpenShift where the site will run. 
+SITE_NAMESPACE: "\{\{ lookup('env', 'SITE_NAMESPACE') | default(SITE_SHORT_NAME, true) \}\}"
 # The main locale of this application. 
 SITE_LOCALE: en-US
 # A computate specific identifier for the locale and language of the code. 
@@ -61,15 +61,15 @@ SITE_PUBLIC_URL: "https://\{\{ SITE_SHORT_NAME \}\}.\{\{ DOMAIN_NAME \}\}"
 # The port of the Zookeeper cluster manager. 
 CLUSTER_PORT: "\{\{ (SITE_PORT | int) + 1 \}\}"
 # The public port of the Zookeeper cluster manager. 
-CLUSTER_PUBLIC_PORT: "{{ (SITE_PORT | int) + 1 }}"
+CLUSTER_PUBLIC_PORT: "\{\{ (SITE_PORT | int) + 1 \}\}"
 # Zookeeper root path to avoid conflicts with other apps using Zookeeper for clustering. 
 ZOOKEEPER_ROOT_PATH: "\{\{ lookup('env', 'ZOOKEEPER_ROOT_PATH') | default(SITE_NAME, true) \}\}"
 # Verify SSL connections. 
-SSL_VERIFY: false
+SSL_VERIFY: "\{\{ lookup('env', 'SSL_VERIFY') | default('false', true) | bool \}\}"
 # The public search endpoint for searching public items in the site. 
-PUBLIC_SEARCH_URI: "/en-us/search"
+PUBLIC_SEARCH_URI: "/search"
 # The user search endpoint for searching public and authorized items in the site. 
-USER_SEARCH_URI: "/en-us/user-search"
+USER_SEARCH_URI: "/user-search"
 
 #########################
 # Mailing list defaults #
@@ -131,8 +131,6 @@ COMPUTATE_SRC: "\{\{ (PARENT_SRC + '/computate') | realpath \}\}"
 COMPUTATE_SEARCH_SRC: "\{\{ (PARENT_SRC + '/computate-search') | realpath \}\}"
 # The default source code directory for the computate-vertx application. 
 COMPUTATE_VERTX_SRC: "\{\{ (PARENT_SRC + '/computate-vertx') | realpath \}\}"
-# The unique ID for solr records in the search engine
-SOLR_ID: "solrId"
 # The paths to the internationalization for this project. 
 I18N_PATHS: ["\{\{ COMPUTATE_VERTX_SRC \}\}/src/main/resources/org/computate/i18n/i18n_\{\{ SITE_LANG \}\}.yaml"]
 # The Java main class of the site. 
@@ -149,7 +147,7 @@ ENABLE_WORKER_VERTICLE: true
 ###################
 
 # The number of Vert.x instances to run per pod. 
-SITE_INSTANCES: 2
+SITE_INSTANCES: 1
 # The number of Vert.x worker instances to run per pod. 
 WORKER_POOL_SIZE: 2
 # The max event loop execute time in seconds. 
@@ -189,35 +187,33 @@ CONTAINER_URI: "\{\{ CONTAINER_REGISTRY \}\}/\{\{ CONTAINER_ORG \}\}/\{\{ CONTAI
 # Static content defaults #
 ###########################
 
-# The name of the repository containing the web static content. 
-SITE_STATIC_NAME: "\{\{ SITE_NAME \}\}-static"
-# The static files git repository for the project. 
-SITE_STATIC_REPO: "git@github.com:\{\{ GITHUB_ORG \}\}/\{\{ SITE_STATIC_NAME \}\}.git"
-# The path to the static files. 
-STATIC_PATH: "\{\{ (SITE_SRC + '/../' + SITE_STATIC_NAME + '/' + ('webawesome' if WEB_COMPONENTS_PREFIX == 'wa-' else 'shoelace')) | realpath \}\}"
-# The base URL to the static files. 
-STATIC_BASE_URL: "\{\{ SITE_BASE_URL \}\}/static"
-# The path to the template files. 
-TEMPLATE_PATH: "\{\{ STATIC_PATH \}\}/templates"
-# The path to the site page templates. 
-DYNAMIC_PAGE_PATHS:
-  - "en-us/article"
 # An optional FontAwesome Pro Kit for additional FontAwesome icons. 
-FONTAWESOME_KIT: "\{\{ query('kubernetes.core.k8s', kind='Secret', resource_name='font-awesome', namespace=SITE_NAMESPACE)[0].data['FONTAWESOME_KIT'] | b64decode \}\}"
+FONTAWESOME_KIT: |-
+  \{\{ '' if WEB_COMPONENTS_PREFIX == 'sl-' else (query('kubernetes.core.k8s', kind='Secret', resource_name='font-awesome', namespace=SITE_NAMESPACE)[0].data['FONTAWESOME_KIT'] | b64decode | default('', true)) \}\}
 # A default FontAwesome style. 
 FONTAWESOME_STYLE: "fa-duotone fa-regular"
-# An optional link element to either a Shoelace web components stylesheet or a Web Awesome Backer web components stylesheet. 
-WEB_COMPONENTS_CSS: |-
-  \{\{ query('kubernetes.core.k8s', kind='Secret', resource_name='font-awesome', namespace=SITE_NAMESPACE)[0].data['WEB_COMPONENTS_CSS'] | b64decode | default('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.0/cdn/themes/light.css" />', true) \}\}
-# An optional link element to either a Shoelace web components JavaScript or a Web Awesome Backer web components JavaScript. 
-WEB_COMPONENTS_JS: |-
-  \{\{ query('kubernetes.core.k8s', kind='Secret', resource_name='font-awesome', namespace=SITE_NAMESPACE)[0].data['WEB_COMPONENTS_JS'] | b64decode | default('<script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.0/cdn/shoelace-autoloader.js"></script>', true) \}\}
 # Switch between Shoelace "sl-" and Web Awesome "wa-" element prefixes. 
 WEB_COMPONENTS_PREFIX: "wa-"
+# An optional link element to either a Shoelace web components stylesheet or a Web Awesome Backer web components stylesheet. 
+WEB_COMPONENTS_CSS: |-
+  \{\{ '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.0/cdn/themes/light.css" />' if WEB_COMPONENTS_PREFIX == 'sl-' else (query('kubernetes.core.k8s', kind='Secret', resource_name='font-awesome', namespace=SITE_NAMESPACE)[0].data['WEB_COMPONENTS_CSS'] | b64decode | default('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.0/cdn/themes/light.css" />', true)) \}\}
+# An optional link element to either a Shoelace web components JavaScript or a Web Awesome Backer web components JavaScript. 
+WEB_COMPONENTS_JS: |-
+  \{\{ '<script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.0/cdn/shoelace-autoloader.js"></script>' if WEB_COMPONENTS_PREFIX == 'sl-' else (query('kubernetes.core.k8s', kind='Secret', resource_name='font-awesome', namespace=SITE_NAMESPACE)[0].data['WEB_COMPONENTS_JS'] | b64decode | default('<script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.0/cdn/shoelace-autoloader.js"></script>', true)) \}\}
 # Site default theme, light or dark. 
 SITE_THEME: {{ SITE_THEME }}
 # The site logo relative URI
 SITE_LOGO_URI: "/svg/logo-{{ SITE_THEME }}.svg"
+# The name of the repository containing the web static content. 
+SITE_STATIC_NAME: "\{\{ SITE_NAME \}\}-static"
+# The static files git repository for the project. 
+SITE_STATIC_REPO: "git@github.com:\{\{ GITHUB_ORG \}\}/\{\{ SITE_STATIC_NAME \}\}.git"
+# The base URL to the static files. 
+STATIC_BASE_URL: "\{\{ SITE_BASE_URL \}\}/static"
+# The path to the static files. 
+STATIC_PATH: "\{\{ (SITE_SRC + '/../' + SITE_STATIC_NAME + '/' + ('webawesome' if WEB_COMPONENTS_PREFIX == 'wa-' else 'shoelace')) | realpath \}\}"
+# The path to the template files. 
+TEMPLATE_PATH: "\{\{ STATIC_PATH \}\}/templates"
 
 ######################
 # Developer defaults #
@@ -246,11 +242,11 @@ SITE_SYSTEMD: "\{\{ '/usr/lib/systemd/system' if ansible_distribution_file_varie
 #######################
 
 # The name of the cloud provider where the public site is deployed. 
-SITE_POWERED_BY_NAME: Red Hat OpenShift Dedicated on Google Cloud
+SITE_POWERED_BY_NAME: "\{\{ lookup('env', 'SITE_POWERED_BY_NAME') | default('Red Hat OpenShift Local', true) \}\}"
 # The URL of the cloud provider where the public site is deployed. 
-SITE_POWERED_BY_URL: https://www.redhat.com/en/technologies/cloud-computing/openshift/dedicated
+SITE_POWERED_BY_URL: "\{\{ lookup('env', 'SITE_POWERED_BY_URL') | default('https://developers.redhat.com/products/openshift-local/overview', true) \}\}"
 # The static path to the logo of the cloud provider where the public site is deployed. 
-SITE_POWERED_BY_IMAGE: '<img class="footer-img" alt="Red Hat OpenShift Dedicated on Google Cloud" src="\{\{ STATIC_BASE_URL \}\}/png/openshift-dedicated-google-cloud.png"/>'
+SITE_POWERED_BY_IMAGE: "\{\{ lookup('env', 'SITE_POWERED_BY_IMAGE') | default('<img class=\"footer-img\" alt=\"' + SITE_POWERED_BY_NAME + '\" src=\"' + STATIC_BASE_URL + '/svg/openshift.svg\"/>', true) \}\}"
 
 ######################
 # Zookeeper defaults #
@@ -272,6 +268,8 @@ ZOOKEEPER_SESSION_TIMEOUT_MILLIS: 5000
 # Solr defaults #
 #################
 
+# The unique ID for solr records in the search engine
+SOLR_ID: "solrId"
 # The namespace in OpenShift where Solr will run. 
 SOLR_NAMESPACE: "\{\{ lookup('env', 'SOLR_NAMESPACE') | default('solr', true) \}\}"
 # Whether to use SSL when connecting to Solr. 
@@ -283,7 +281,7 @@ SOLR_PORT: "\{\{ lookup('env', 'SOLR_PORT') | default('443', true) \}\}"
 # The solr collection to use for the site. 
 SOLR_COLLECTION: "\{\{ lookup('env', 'SOLR_COLLECTION_' + SITE_SHORT_NAME) | default(SITE_SHORT_NAME, true) \}\}"
 # The URL to the Solr collection. 
-SOLR_URL: "\{\{ ('https://' if SOLR_SSL == True else 'http://') + SOLR_HOST_NAME + ('' if SOLR_PORT == 443 else (':' + SOLR_PORT)) \}\}/solr/\{\{ SOLR_COLLECTION \}\}"
+SOLR_URL: "\{\{ ('https://' if SOLR_SSL | bool == True else 'http://') + SOLR_HOST_NAME + ('' if SOLR_PORT | int == 443 else (':' + (SOLR_PORT | string))) \}\}/solr/\{\{ SOLR_COLLECTION \}\}"
 # The solr pod name to connect and create Solr configsets and collections. 
 SOLR_POD_NAME: "solr-0"
 # The time before committing Solr data in milliseconds. 
@@ -315,7 +313,7 @@ ENABLE_DATABASE: true
 # The namespace of the database in OpenShift. 
 DATABASE_NAMESPACE: postgres
 # The PostgreSQL database host name. 
-DATABASE_HOST: "\{\{ lookup('env', 'DATABASE_HOST') | default('postgres.' + OPENSHIFT_APPS_DOMAIN, true) \}\}"
+DATABASE_HOST_NAME: "\{\{ lookup('env', 'DATABASE_HOST_NAME') | default('postgres.' + OPENSHIFT_APPS_DOMAIN, true) \}\}"
 # The PostgreSQL database port. 
 DATABASE_PORT: "\{\{ lookup('env', 'DATABASE_PORT') | default('30432', true) \}\}"
 # The PostgreSQL database user name of the site. 
@@ -350,9 +348,9 @@ AUTH_SSL: true
 # Whether the Auth server requires SSL. 
 AUTH_SSL_REQUIRED: all
 # The Auth realm. 
-AUTH_REALM: "\{\{ lookup('env', 'AUTH_REALM_' + SITE_SHORT_NAME) | default(SITE_SHORT_NAME | upper) \}\}"
+AUTH_REALM: "\{\{ lookup('env', 'AUTH_REALM_' + SITE_SHORT_NAME) | default(SITE_SHORT_NAME | upper, true) \}\}"
 # The Auth client. 
-AUTH_CLIENT: "\{\{ lookup('env', 'AUTH_CLIENT_' + SITE_SHORT_NAME) | default(SITE_SHORT_NAME) \}\}"
+AUTH_CLIENT: "\{\{ lookup('env', 'AUTH_CLIENT_' + SITE_SHORT_NAME) | default(SITE_SHORT_NAME, true) \}\}"
 # The Auth openshift secret with the client secret credentials. 
 AUTH_OPENSHIFT_SECRET: "\{\{ lookup('env', 'AUTH_OPENSHIFT_SECRET_' + SITE_SHORT_NAME) | default('keycloak-client-' + AUTH_CLIENT, true) \}\}"
 # The Auth secret. 
@@ -400,9 +398,9 @@ SOLR_HOST_NAME_FIWARE: "\{\{ lookup('env', 'SOLR_HOST_NAME_FIWARE') | default(SO
 # The default port that Solr runs. 
 SOLR_PORT_FIWARE: "\{\{ lookup('env', 'SOLR_PORT_FIWARE') | default(SOLR_PORT, true) \}\}"
 # The solr collection to use for the site. 
-SOLR_COLLECTION_FIWARE: "\{\{ lookup('env', 'SOLR_COLLECTION_FIWARE') | default(SOLR_COLLECTION_COMPUTATE, true) \}\}"
+SOLR_COLLECTION_FIWARE: "\{\{ lookup('env', 'SOLR_COLLECTION_FIWARE') | default('fiware', true) \}\}"
 # The URL to the Solr collection. 
-SOLR_URL_FIWARE: "\{\{ ('https://' if SOLR_SSL_FIWARE == True else 'http://') + SOLR_HOST_NAME_FIWARE + ('' if SOLR_PORT_FIWARE == 443 else (':' + SOLR_PORT_FIWARE)) \}\}/solr/\{\{ SOLR_COLLECTION_FIWARE \}\}"
+SOLR_URL_FIWARE: "\{\{ ('https://' if SOLR_SSL_FIWARE | bool == True else 'http://') + SOLR_HOST_NAME_FIWARE + ('' if SOLR_PORT_FIWARE | int == 443 else (':' + (SOLR_PORT_FIWARE | string))) \}\}/solr/\{\{ SOLR_COLLECTION_FIWARE \}\}"
 
 ##################
 # Context Broker #
@@ -437,19 +435,6 @@ NGSILD_PATH: "\{\{ lookup('env', NGSILD_PATH_ENV) | default('', true) \}\}"
 # iotagent-json #
 #################
 
-# The IoT Agent JSON namespace. 
-IOTAGENT_NAMESPACE: "iotagent"
-# Whether to use SSL when connecting to the IoT Agent JSON. 
-IOTAGENT_SSL: true
-# The host name to connect to the IoT Agent JSON in OpenShift. 
-IOTAGENT_HOST_NAME: "iotagent-json.apps-crc.testing"
-# The HTTP port that the IoT Agent JSON runs. 
-IOTAGENT_HTTP_PORT: 7896
-# The North port that the IoT Agent JSON runs. 
-IOTAGENT_NORTH_PORT: 443
-# The message broker transport type (MQTT or AMQP). 
-IOTAGENT_TRANSPORT: AMQP
-
 ##############
 # Kafka vars #
 ##############
@@ -470,35 +455,34 @@ KAFKA_PORT: 9093
 #############
 
 # Enable MQTT message integration. 
-ENABLE_MQTT: false
-# The namespace in OpenShift where the AMQP message broker will run. 
-MQTT_NAMESPACE: rabbitmq
-# The MQTT port. 
-MQTT_PORT: 5672
+ENABLE_MQTT: "\{\{ (lookup('env', 'ENABLE_MQTT') | lower) == 'true' \}\}"
+# The namespace in OpenShift where the MQTT message broker will run. 
+MQTT_NAMESPACE: "\{\{ lookup('env', 'MQTT_NAMESPACE') | default('amq-broker', true) \}\}"
+# The MQTT port (default 1883). 
+MQTT_PORT: "\{\{ lookup('env', 'MQTT_PORT') | default('30083', true) \}\}"
 # The MQTT host name. 
-MQTT_HOST_NAME: "rabbitmq.\{\{ MQTT_NAMESPACE \}\}.svc"
+MQTT_HOST_NAME: "\{\{ lookup('env', 'MQTT_HOST_NAME') | default('import-broker-mqtt-0-svc.' + OPENSHIFT_APPS_DOMAIN, true) \}\}"
 # The MQTT user. 
-MQTT_USER: "user"
+MQTT_USERNAME: "\{\{ lookup('env', 'MQTT_USERNAME') | default('user', true) \}\}"
 # The MQTT password. 
-#MQTT_PASSWORD: "\{\{ query('kubernetes.core.k8s', kind='Secret', resource_name='iotagent-json-message-broker-secret', namespace=SITE_NAMESPACE)[0].data['password'] | b64decode \}\}"
+MQTT_PASSWORD: "\{\{ lookup('env', 'MQTT_PASSWORD') | default('password', true) \}\}"
 
 #############
 # AMQP vars #
 #############
 
 # Enable AMQP message integration. 
-ENABLE_AMQP: false
+ENABLE_AMQP: "\{\{ (lookup('env', 'ENABLE_AMQP') | lower) == 'true' \}\}"
 # The namespace in OpenShift where the AMQP message broker will run. 
-AMQP_NAMESPACE: rabbitmq
-# The AMQP port. 
-AMQP_PORT: 5672
+AMQP_NAMESPACE: "\{\{ lookup('env', 'AMQP_NAMESPACE') | default('amq-broker', true) \}\}"
+# The AMQP port (default 5672). 
+AMQP_PORT: "\{\{ lookup('env', 'AMQP_PORT') | default('30072', true) \}\}"
 # The AMQP host name. 
-AMQP_HOST_NAME: "rabbitmq.\{\{ AMQP_NAMESPACE \}\}.svc"
+AMQP_HOST_NAME: "\{\{ lookup('env', 'AMQP_HOST_NAME') | default('import-broker-AMQP-0-svc.' + OPENSHIFT_APPS_DOMAIN, true) \}\}"
 # The AMQP user. 
-AMQP_USER: "user"
+AMQP_USERNAME: "\{\{ lookup('env', 'AMQP_USERNAME') | default('user', true) \}\}"
 # The AMQP password. 
-AMQP_PASSWORD: ""
-#AMQP_HOST_PASSWORD: "\{\{ query('kubernetes.core.k8s', kind='Secret', resource_name='iotagent-json-message-broker-secret', namespace=SITE_NAMESPACE)[0].data['password'] | b64decode \}\}"
+AMQP_PASSWORD: "\{\{ lookup('env', 'AMQP_PASSWORD') | default('password', true) \}\}"
 # The AMQP virtual host. 
 AMQP_VIRTUAL_HOST: "%2F"
 
@@ -507,18 +491,18 @@ AMQP_VIRTUAL_HOST: "%2F"
 #################
 
 # Enable RabbitMQ message integration. 
-ENABLE_RABBITMQ: false
-# The namespace in OpenShift where the AMQP message broker will run. 
-RABBITMQ_NAMESPACE: rabbitmq
-# The AMQP port. 
-RABBITMQ_PORT: 30072
-# The AMQP host name. 
-RABBITMQ_HOST_NAME: "rabbitmq.\{\{ AMQP_NAMESPACE \}\}.svc"
-# The AMQP user. 
-RABBITMQ_USER: "user"
-# The AMQP password. 
-#RABBITMQ_PASSWORD: "\{\{ query('kubernetes.core.k8s', kind='Secret', resource_name='rabbitmq', namespace=RABBITMQ_NAMESPACE)[0].data['rabbitmq-password'] | b64decode \}\}"
-# The AMQP virtual host. 
+ENABLE_RABBITMQ: "\{\{ (lookup('env', 'ENABLE_RABBITMQ') | lower) == 'true' \}\}"
+# The namespace in OpenShift where the RabbitMQ message broker will run. 
+RABBITMQ_NAMESPACE: "\{\{ lookup('env', 'RABBITMQ_NAMESPACE') | default('rabbitmq', true) \}\}"
+# The RabbitMQ port (default 5672). 
+RABBITMQ_PORT: "\{\{ lookup('env', 'RABBITMQ_PORT') | default('30072', true) \}\}"
+# The RabbitMQ host name. 
+RABBITMQ_HOST_NAME: "\{\{ lookup('env', 'RABBITMQ_HOST_NAME') | default('rabbitmq.' + OPENSHIFT_APPS_DOMAIN, true) \}\}"
+# The RabbitMQ user. 
+RABBITMQ_USERNAME: "\{\{ lookup('env', 'RABBITMQ_USERNAME') | default('user', true) \}\}"
+# The RabbitMQ password. 
+RABBITMQ_PASSWORD: "\{\{ lookup('env', 'RABBITMQ_PASSWORD') | default('password', true) \}\}"
+# The RabbitMQ virtual host. 
 RABBITMQ_VIRTUAL_HOST: "/"
 
 ################################

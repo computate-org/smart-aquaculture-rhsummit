@@ -168,7 +168,7 @@ data:
         namespace: "{{ WORKBENCH_NAMESPACE }}"
         pod: "{{ WORKBENCH_NAME }}-0"
         command: >-
-          /opt/app-root/src/python/bin/pip install jupyterlab bash_kernel ansible kubernetes openshift jinja2 jmespath pika --upgrade
+          /opt/app-root/src/python/bin/pip install jupyterlab bash_kernel ansible kubernetes openshift jinja2 jmespath pika paho-mqtt --upgrade
     - name: "Copy workbench Jupyter Notebooks and Ansible to {{ WORKBENCH_NAMESPACE }}"
       tags:
         - deploy-notebooks

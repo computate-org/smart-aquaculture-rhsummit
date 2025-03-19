@@ -28,7 +28,7 @@
   delay: 30
 - name: Wait for AMQ Broker Ready condition
   kubernetes.core.k8s_info:
-    namespace: "{{ SITE_NAMESPACE }}"
+    namespace: "amq-broker"
     kind: Pod
     label_selectors:
       - ActiveMQArtemis=import-broker
