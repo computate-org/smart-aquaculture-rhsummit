@@ -13,8 +13,12 @@
 - Update the `WORKBENCH_NAMES` section of the `roles/overlay-vars/vars/overlay-vars.yaml` file to add as many users as you want to deploy. These vars are preconfigured to work with OpenShift Local by default, so customizations are required for other OpenShift clusters. 
 - Inside of the `smart-aquaculture-rhsummit` repo, run the Ansible Playbook to deploy all features. 
 
+There are 2 required variables to define, the OpenShift apps domain, and the number of workbenches to deploy. 
+
 ```bash
-ansible-playbook playbooks/deploy-all.yaml
+ansible-playbook playbooks/deploy-all.yaml \
+  -e OPENSHIFT_APPS_DOMAIN=apps... \
+  -e WORKBENCH_COUNT=3
 ```
 
 After the Ansible scripts complete, there will be OpenShift Jobs running in each of the workbench-user namespaces to finish setting up the VSCode environments for each user. Any user with the `WORKBENCH_ADMIN: true` variable in the overlay-vars role will have extra tasks performed to load the FIWARE related AI model into the search engine. 
