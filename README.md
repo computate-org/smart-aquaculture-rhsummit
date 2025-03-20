@@ -8,6 +8,10 @@
 
 ## How to deploy the Smart Aquaculture workbench
 
+You can watch a demonstration of deploying the Smart Aquaculture Workshop on a new Red hat OpenShift Demo cluster here on Youtube: 
+
+https://youtu.be/2AIGJAQWxGY
+
 - Clone the [smart-aquaculture-rhsummit](https://github.com/computate-org/smart-aquaculture-rhsummit) repo to your computer. 
 - Connect to your target OpenShift cluster in the CLI with the oc command. 
 - Update the `WORKBENCH_NAMES` section of the `roles/overlay-vars/vars/overlay-vars.yaml` file to add as many users as you want to deploy. These vars are preconfigured to work with OpenShift Local by default, so customizations are required for other OpenShift clusters. 
