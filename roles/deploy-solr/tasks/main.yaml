@@ -31,7 +31,7 @@
     namespace: "solr"
     pod: "solr-0"
     remote_path: /bitnami/solr/backup/
-    local_path: /home/ctate/.local/src/courses/computate-smart-cloud-deployer/solr/
+    local_path: "{{ (playbook_dir + '/..') | realpath }}/solr/"
     validate_certs: false
 - name: "Create solr computate configset"
   kubernetes.core.k8s_exec:
