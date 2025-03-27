@@ -14,7 +14,7 @@ data:
   AUTH_CLIENT_{{ SITE_SHORT_NAME }}: "{{ SITE_SHORT_NAME }}"
   AUTH_OPENSHIFT_SECRET_{{ SITE_SHORT_NAME }}: "{{ 'keycloak-client-' + AUTH_CLIENT }}"
   AUTH_ADMIN_OPENSHIFT_SECRET_{{ SITE_SHORT_NAME }}: "keycloak-initial-admin-{{ SITE_NAME }}"
-  AUTH_ADMIN_USERNAME_{{ SITE_SHORT_NAME }}: "{{ 'admin' }}"
+  AUTH_ADMIN_USERNAME_{{ SITE_SHORT_NAME }}: "{{ 'temp-admin' }}"
   AUTH_SCOPE_ADMIN_{{ SITE_SHORT_NAME }}: "{{ 'Admin' }}"
   AUTH_SCOPE_SUPER_ADMIN_{{ SITE_SHORT_NAME }}: "{{ 'SuperAdmin' }}"
   SITE_THEME: {{ SITE_THEME }}
