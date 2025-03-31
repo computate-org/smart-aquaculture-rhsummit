@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: scorpiobroker
-  namespace: scorpiobroker
   labels:
     app.kubernetes.io/instance: demo-scorpiobroker
     app.kubernetes.io/name: scorpiobroker
