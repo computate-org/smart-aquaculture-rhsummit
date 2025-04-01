@@ -15,7 +15,7 @@
       - app.kubernetes.io/name=zookeeper
       - apps.kubernetes.io/pod-index=0
     wait: true
-    wait_timeout: 300
+    wait_timeout: 600
     wait_condition:
       type: Ready
       status: 'True'

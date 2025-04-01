@@ -11,7 +11,7 @@
     label_selectors:
       - name=amq-broker-operator
     wait: true
-    wait_timeout: 300
+    wait_timeout: 600
     wait_condition:
       type: Ready
       status: 'True'
@@ -33,7 +33,7 @@
     label_selectors:
       - ActiveMQArtemis=import-broker
     wait: true
-    wait_timeout: 300
+    wait_timeout: 600
     wait_condition:
       type: Ready
       status: 'True'

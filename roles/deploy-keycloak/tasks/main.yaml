@@ -10,7 +10,7 @@
     label_selectors:
       - name=rhbk-operator
     wait: true
-    wait_timeout: 300
+    wait_timeout: 600
     wait_condition:
       type: Ready
       status: 'True'

@@ -6,7 +6,7 @@
     label_selectors:
       - app=cert-manager
     wait: true
-    wait_timeout: 300
+    wait_timeout: 600
     wait_condition:
       type: Ready
       status: 'True'
@@ -19,7 +19,7 @@
     kind: ClusterIssuer
     name: letsencrypt-production-http01
     wait: true
-    wait_timeout: 300
+    wait_timeout: 600
     wait_condition:
       type: Ready
       status: 'True'

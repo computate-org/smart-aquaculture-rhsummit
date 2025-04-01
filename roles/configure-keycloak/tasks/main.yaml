@@ -255,7 +255,7 @@
     label_selectors:
       - control-plane=group-sync-operator
     wait: true
-    wait_timeout: 300
+    wait_timeout: 600
     wait_condition:
       type: Ready
       status: 'True'

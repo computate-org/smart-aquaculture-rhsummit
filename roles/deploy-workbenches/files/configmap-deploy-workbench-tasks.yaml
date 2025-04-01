@@ -51,7 +51,7 @@ data:
         label_selectors:
           - "notebook-name={{ WORKBENCH_NAME }}"
         wait: true
-        wait_timeout: 300
+        wait_timeout: 600
         wait_condition:
           type: Ready
           status: 'True'
