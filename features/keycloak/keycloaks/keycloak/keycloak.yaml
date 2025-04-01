@@ -6,6 +6,13 @@ metadata:
     app: keycloak
 spec:
   instances: 1
+  resources:
+    limits:
+      cpu: '1'
+      memory: '3Gi'
+    requests:
+      cpu: '1'
+      memory: '2Gi'
   db:
     vendor: postgres
     host: postgres-primary.postgres.svc

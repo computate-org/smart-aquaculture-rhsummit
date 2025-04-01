@@ -22,3 +22,10 @@ spec:
     persistenceEnabled: false
     requireLogin: false
     size: 2
+    resources:
+      limits:
+        cpu: '1'
+        memory: '4Gi'
+      requests:
+        cpu: '1'
+        memory: '1Gi'
