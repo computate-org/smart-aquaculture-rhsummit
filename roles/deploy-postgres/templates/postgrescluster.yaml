@@ -52,8 +52,6 @@ spec:
         pg_hba:
           - "host keycloak keycloak all md5"
           - "local keycloak keycloak trust"
-          - "host smartaquaculture smartaquaculture all md5"
-          - "local smartaquaculture smartaquaculture trust"
           - "host all scorpiobroker all md5"
           - "local all scorpiobroker trust"
 {% for WORKBENCH_NUM in range(0, (WORKBENCH_COUNT | int) + 1, 1) | list %}
