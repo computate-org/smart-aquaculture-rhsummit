@@ -1,5 +1,11 @@
 ---
 
+- name: "Create a default font-awesome secret in namespace {{ SITE_NAMESPACE }}"
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'shoelace-secret.yaml') }}"
+    validate_certs: false
+  ignore_errors: true
 - name: Get a new Keycloak client secret, passing client_id instead of id
   community.general.keycloak_clientsecret_info:
     validate_certs: false

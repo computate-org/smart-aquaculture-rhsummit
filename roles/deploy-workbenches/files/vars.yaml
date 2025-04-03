@@ -187,21 +187,24 @@ CONTAINER_URI: "\{\{ CONTAINER_REGISTRY \}\}/\{\{ CONTAINER_ORG \}\}/\{\{ CONTAI
 # Static content defaults #
 ###########################
 
-# An optional FontAwesome Pro Kit for additional FontAwesome icons. 
-FONTAWESOME_KIT: |-
-  \{\{ '' if WEB_COMPONENTS_PREFIX == 'sl-' else (query('kubernetes.core.k8s', kind='Secret', resource_name='font-awesome', namespace=SITE_NAMESPACE)[0].data['FONTAWESOME_KIT'] | b64decode | default('', true)) \}\}
-# A default FontAwesome style. 
-FONTAWESOME_STYLE: "fa-duotone fa-regular"
 # Switch between Shoelace "sl-" and Web Awesome "wa-" element prefixes. 
-WEB_COMPONENTS_PREFIX: "wa-"
+WEB_COMPONENTS_PREFIX: "\{\{ lookup('env', 'WEB_COMPONENTS_PREFIX') | default('sl-', true) \}\}"
+# A secret with links to web components. 
+WEB_COMPONENTS_SECRET: "\{\{ lookup('env', 'WEB_COMPONENTS_SECRET') | default('font-awesome', true) \}\}"
 # An optional link element to either a Shoelace web components stylesheet or a Web Awesome Backer web components stylesheet. 
 WEB_COMPONENTS_CSS: |-
-  \{\{ '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.0/cdn/themes/light.css" />' if WEB_COMPONENTS_PREFIX == 'sl-' else (query('kubernetes.core.k8s', kind='Secret', resource_name='font-awesome', namespace=SITE_NAMESPACE)[0].data['WEB_COMPONENTS_CSS'] | b64decode | default('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.0/cdn/themes/light.css" />', true)) \}\}
+  \{\{ '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.0/cdn/themes/light.css" />' if WEB_COMPONENTS_PREFIX == 'sl-' else (query('kubernetes.core.k8s', kind='Secret', resource_name=WEB_COMPONENTS_SECRET, namespace=SITE_NAMESPACE)[0].data['WEB_COMPONENTS_CSS'] | b64decode | default('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.0/cdn/themes/light.css" />', true)) \}\}
 # An optional link element to either a Shoelace web components JavaScript or a Web Awesome Backer web components JavaScript. 
 WEB_COMPONENTS_JS: |-
-  \{\{ '<script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.0/cdn/shoelace-autoloader.js"></script>' if WEB_COMPONENTS_PREFIX == 'sl-' else (query('kubernetes.core.k8s', kind='Secret', resource_name='font-awesome', namespace=SITE_NAMESPACE)[0].data['WEB_COMPONENTS_JS'] | b64decode | default('<script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.0/cdn/shoelace-autoloader.js"></script>', true)) \}\}
+  \{\{ '<script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.0/cdn/shoelace-autoloader.js"></script>' if WEB_COMPONENTS_PREFIX == 'sl-' else (query('kubernetes.core.k8s', kind='Secret', resource_name=WEB_COMPONENTS_SECRET, namespace=SITE_NAMESPACE)[0].data['WEB_COMPONENTS_JS'] | b64decode | default('<script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.0/cdn/shoelace-autoloader.js"></script>', true)) \}\}
+# An optional FontAwesome Pro Kit for additional FontAwesome icons. 
+FONTAWESOME_KIT: |-
+  \{\{ '' if WEB_COMPONENTS_PREFIX == 'sl-' else (query('kubernetes.core.k8s', kind='Secret', resource_name=WEB_COMPONENTS_SECRET, namespace=SITE_NAMESPACE)[0].data['FONTAWESOME_KIT'] | b64decode | default('', true)) \}\}
+# A default FontAwesome style. 
+FONTAWESOME_STYLE: |-
+  \{\{ 'fa-duotone fa-regular' if WEB_COMPONENTS_PREFIX == 'sl-' else (query('kubernetes.core.k8s', kind='Secret', resource_name=WEB_COMPONENTS_SECRET, namespace=SITE_NAMESPACE)[0].data['FONTAWESOME_STYLE'] | b64decode | default('', true)) \}\}
 # Site default theme, light or dark. 
-SITE_THEME: {{ SITE_THEME }}
+SITE_THEME: "\{\{ 'dark' if WEB_COMPONENTS_PREFIX == 'sl-' else (query('kubernetes.core.k8s', kind='Secret', resource_name=WEB_COMPONENTS_SECRET, namespace=SITE_NAMESPACE)[0].data['FONTAWESOME_STYLE'] | b64decode | default('', true)) \}\}"
 # The site logo relative URI
 SITE_LOGO_URI: "/svg/logo-{{ SITE_THEME }}.svg"
 # The name of the repository containing the web static content. 
