@@ -8,7 +8,7 @@ metadata:
     app.kubernetes.io/component: solr
 spec:
   podManagementPolicy: Parallel
-  replicas: 1
+  replicas: 3
   revisionHistoryLimit: 10
   selector:
     matchLabels:
@@ -48,7 +48,7 @@ spec:
           imagePullPolicy: "IfNotPresent"
           resources:
             limits:
-              cpu: "500m"
+              cpu: "1"
               ephemeral-storage: 2Gi
               memory: 2Gi
             requests:
@@ -100,7 +100,7 @@ spec:
             - name: SOLR_ENABLE_CLOUD_MODE
               value: "yes"
             - name: SOLR_NUMBER_OF_NODES
-              value: "1"
+              value: "3"
             - name: SOLR_PORT_NUMBER
               value: "8983"
             - name: SOLR_SERVER_DIRECTORY
@@ -108,7 +108,7 @@ spec:
             - name: SOLR_COLLECTION
               value: "my-collection"
             - name: SOLR_COLLECTION_SHARDS
-              value: "1"
+              value: "3"
             - name: SOLR_COLLECTION_REPLICAS
               value: "1"
             - name: SOLR_ENABLE_AUTHENTICATION
@@ -118,7 +118,7 @@ spec:
             - name: SOLR_ADMIN_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: solr
+                  name: solr-secret
                   key: solr-password
             - name: SOLR_ZK_HOSTS
               value: "zookeeper.zookeeper.svc:2181"
@@ -127,11 +127,11 @@ spec:
               containerPort: 8983
           resources:
             limits:
-              cpu: "500m"
+              cpu: "2"
               ephemeral-storage: 2Gi
-              memory: 3Gi
+              memory: 6Gi
             requests:
-              cpu: 250m
+              cpu: 850m
               ephemeral-storage: 50Mi
               memory: 1Gi
           livenessProbe:
