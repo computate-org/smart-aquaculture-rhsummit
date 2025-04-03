@@ -34,10 +34,6 @@ spec:
       options: "SUPERUSER"
       databases:
         - keycloak
-    - name: "smartaquaculture"
-      options: "SUPERUSER"
-      databases:
-        - "smartaquaculture"
     - name: "scorpiobroker"
       options: "SUPERUSER CREATEDB"
       databases:
