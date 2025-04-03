@@ -118,7 +118,7 @@ spec:
             - name: SOLR_ADMIN_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: solr-secret
+                  name: solr
                   key: solr-password
             - name: SOLR_ZK_HOSTS
               value: "zookeeper.zookeeper.svc:2181"
