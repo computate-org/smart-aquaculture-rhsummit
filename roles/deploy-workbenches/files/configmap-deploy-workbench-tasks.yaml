@@ -50,7 +50,7 @@ data:
         pod: "{{ WORKBENCH_NAME }}-0"
         command: >-
           bash -c '
-          git clone https://github.com/computate-org/smart-aquaculture-workbench.git --branch 1.0.3 --single-branch /opt/app-root/src/smart-aquaculture-workbench;
+          git clone https://github.com/computate-org/smart-aquaculture-workbench.git --branch 1.0.4 --single-branch /opt/app-root/src/smart-aquaculture-workbench;
           rm -rf /opt/app-root/src/smart-aquaculture-workbench/.git*;
           rsync -r /opt/app-root/src/smart-aquaculture-workbench/ /opt/app-root/src/;
           rm -rf /opt/app-root/src/smart-aquaculture-workbench/
