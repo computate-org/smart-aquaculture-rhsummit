@@ -10,7 +10,7 @@ metadata:
     app.kubernetes.io/component: zookeeper
     role: zookeeper
 spec:
-  replicas: 3
+  replicas: 2
   revisionHistoryLimit: 10
   podManagementPolicy: Parallel
   selector:
@@ -100,7 +100,7 @@ spec:
             - name: ZOO_MAX_SESSION_TIMEOUT
               value: "40000"
             - name: ZOO_SERVERS
-              value: zookeeper-0.zookeeper-headless.zookeeper.svc.cluster.local:2888:3888::1 zookeeper-1.zookeeper-headless.zookeeper.svc.cluster.local:2888:3888::2 zookeeper-2.zookeeper-headless.zookeeper.svc.cluster.local:2888:3888::3
+              value: zookeeper-0.zookeeper-headless.zookeeper.svc.cluster.local:2888:3888::1 zookeeper-1.zookeeper-headless.zookeeper.svc.cluster.local:2888:3888::2
             - name: ZOO_ENABLE_AUTH
               value: "no"
             - name: ZOO_ENABLE_QUORUM_AUTH

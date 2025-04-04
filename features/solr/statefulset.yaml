@@ -8,7 +8,7 @@ metadata:
     app.kubernetes.io/component: solr
 spec:
   podManagementPolicy: Parallel
-  replicas: 3
+  replicas: 2
   revisionHistoryLimit: 10
   selector:
     matchLabels:
@@ -100,7 +100,7 @@ spec:
             - name: SOLR_ENABLE_CLOUD_MODE
               value: "yes"
             - name: SOLR_NUMBER_OF_NODES
-              value: "3"
+              value: "2"
             - name: SOLR_PORT_NUMBER
               value: "8983"
             - name: SOLR_SERVER_DIRECTORY
@@ -108,7 +108,7 @@ spec:
             - name: SOLR_COLLECTION
               value: "my-collection"
             - name: SOLR_COLLECTION_SHARDS
-              value: "3"
+              value: "2"
             - name: SOLR_COLLECTION_REPLICAS
               value: "1"
             - name: SOLR_ENABLE_AUTHENTICATION
@@ -127,9 +127,9 @@ spec:
               containerPort: 8983
           resources:
             limits:
-              cpu: "2"
+              cpu: "1"
               ephemeral-storage: 2Gi
-              memory: 6Gi
+              memory: 3Gi
             requests:
               cpu: 850m
               ephemeral-storage: 50Mi
