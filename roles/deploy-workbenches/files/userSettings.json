@@ -9,4 +9,5 @@
   , "editor.tabSize": 2
   , "terminal.integrated.scrollback": 10000
   , "search.quickOpen.includeHistory": false
+  , "files.autoSave": "off"
 }
