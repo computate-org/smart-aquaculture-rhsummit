@@ -18,11 +18,15 @@
   k8s:
     state: present
     definition: "{{ lookup('template', 'postgres-pguser-keycloak-secret.yaml') }}"
+  retries: 20
+  delay: 30
 - name: "Deploy keycloak certificate on OpenShift"
   kubernetes.core.k8s:
     state: present
     namespace: keycloak
     definition: "{{ lookup('template', 'certificate.yaml') }}"
+  retries: 20
+  delay: 30
 - name: "Deploy keycloak on OpenShift"
   kubernetes.core.k8s:
     state: present
