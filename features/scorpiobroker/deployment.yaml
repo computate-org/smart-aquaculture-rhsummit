@@ -50,7 +50,8 @@ spec:
                   name: "postgres-pguser-scorpiobroker"
                   key: "password"
 
-          image: 'docker.io/scorpiobroker/all-in-one-runner:java-latest'
+          image: 'quay.io/rhpds/all-in-one-runner:java-latest'
+          # image: 'docker.io/scorpiobroker/all-in-one-runner:java-latest'
           imagePullPolicy: IfNotPresent
           livenessProbe:
             initialDelaySeconds: 20
