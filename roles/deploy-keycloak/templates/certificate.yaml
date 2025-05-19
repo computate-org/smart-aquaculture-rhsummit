@@ -6,7 +6,7 @@ spec:
   issuerRef:
     group: cert-manager.io
     kind: ClusterIssuer
-    name: zerossl-production-ec2
+    name: letsencrypt-production-ec2
   secretName: keycloak-certificate
   duration: 2160h
   isCA: false
