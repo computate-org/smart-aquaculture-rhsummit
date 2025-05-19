@@ -16,7 +16,7 @@
       status: 'True'
 - name: "Install database secret on OpenShift"
   register: r_k8s_secret
-  kubernetes.core.k8:
+  kubernetes.core.k8s:
     state: present
     definition: "{{ lookup('template', 'postgres-pguser-keycloak-secret.yaml') }}"
   until: r_k8s_secret is success
