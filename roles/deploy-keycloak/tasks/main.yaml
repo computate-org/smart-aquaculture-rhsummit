@@ -15,16 +15,20 @@
       type: Ready
       status: 'True'
 - name: "Install database secret on OpenShift"
-  k8s:
+  register: r_k8s_secret
+  kubernetes.core.k8s:
     state: present
     definition: "{{ lookup('template', 'postgres-pguser-keycloak-secret.yaml') }}"
+  until: r_k8s_secret is success
   retries: 20
   delay: 30
 - name: "Deploy keycloak certificate on OpenShift"
+  register: r_k8s_cert
   kubernetes.core.k8s:
     state: present
     namespace: keycloak
     definition: "{{ lookup('template', 'certificate.yaml') }}"
+  until: r_k8s_cert is success
   retries: 20
   delay: 30
 - name: "Deploy keycloak on OpenShift"
